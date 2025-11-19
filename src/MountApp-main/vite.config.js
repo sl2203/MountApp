@@ -14,7 +14,7 @@ export default defineConfig({
         secure: true,
         rewrite: (path) => path.replace(/^\/api/, ""), 
       },
-        "/dbapi": {target : 'http://localhost:8888/'}
+        "/dbapi": {target : 'http://localhost:3000/'}
     },
   },
 });
