@@ -1,20 +1,7 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import {useEffect, useState} from "react";
 
 export default function Community() {
-    function getApi(){
-        const [userid, setuserid] = useState('');
-
-        useEffect(() => {
-            axios.get('/dbapi/userid')
-                .then((res) => {
-                    setuserid(res.data);
-                })
-        },[]);
-        return(userid);
-    }
   const navigate = useNavigate();
 
   const posts = [
@@ -54,7 +41,7 @@ export default function Community() {
               >
                 <div className="flex items-center mb-3">
                   <img className="w-10 h-10 rounded-full mr-3" />
-                  <span>{getApi()}</span>
+                  <span>user</span>
                </div>
                 <h4 className="font-bold">{post.title}</h4>
                 <p className="text-gray-600">{post.comment}</p>

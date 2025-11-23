@@ -2,10 +2,10 @@
   import { motion } from "framer-motion";
   import { Plus, Clock, MapPin } from "lucide-react";
   import { useState } from "react";
-  import BackButton from "../layouts/BackButton.jsx";
-  import { guides } from "./guidesData.jsx";
-  import { trailsData } from "./trailsData.jsx";
-  import MountainWeather from "./MountainWeather.jsx";
+  import BackButton from "../layouts/BackButton";
+  import { guides } from "./guidesData";
+  import { trailsData } from "./trailsData";
+  import MountainWeather from "./MountainWeather";
 
   export default function Mountain() {
     const { name } = useParams();

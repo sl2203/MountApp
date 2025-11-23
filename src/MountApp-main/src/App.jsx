@@ -1,14 +1,14 @@
   import { Routes, Route } from "react-router-dom";
-  import MainLayout from "./layouts/MainLayout.jsx";
-  import Home from "./pages/Home.jsx";
-  import Mountain from "./pages/Mountain.jsx";
-  import Map from "./pages/Map.jsx";
-  import Community from "./pages/Community.jsx";
-  import MyPage from "./pages/MyPage.jsx";
-  import DetailPage from "./pages/DetailPage.jsx";
-  import LoginPage from "./pages/LoginPage.jsx";
-  import FindAccountPage from "./pages/FindAccountPage.jsx";
-  import JoinPage from "./pages/JoinPage.jsx";
+  import MainLayout from "./layouts/MainLayout";
+  import Home from "./pages/Home";
+  import Mountain from "./pages/Mountain";
+  import Map from "./pages/Map";
+  import Community from "./pages/Community";
+  import MyPage from "./pages/MyPage";
+  import DetailPage from "./pages/DetailPage";
+  import LoginPage from "./pages/LoginPage";
+  import FindAccountPage from "./pages/FindAccountPage";
+  import JoinPage from "./pages/Joinpage";
 
   function App() {
     return (

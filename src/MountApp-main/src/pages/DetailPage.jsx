@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import BackButton from "../layouts/BackButton.jsx";
+import BackButton from "../layouts/BackButton";
 
 export default function DetailPage({ dataType }) {
     const { id } = useParams();
