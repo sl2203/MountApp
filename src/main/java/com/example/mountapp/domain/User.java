@@ -26,7 +26,6 @@ public class User {
     @Column(name = "PASSWORD", nullable = false)
     private String password; // 암호화된 비밀번호
 
-
     @Column(name = "EMAIL")
     private String email;
 
