@@ -14,9 +14,10 @@ export default function JoinPage() {
         phone: '',          // 전화번호
         authCode: '',       // 인증번호 (지금은 UI만)
         email: '',          // 이메일
-        name: '',           // 이름 (백엔드의 nickname으로 보낼 예정)
+        name: '',           // 이름
         birthdate: '',      // 생년월일
-        gender: ''          // 성별
+        gender: '',          // 성별
+        nickname: ''           //활동명
     });
 
 
@@ -45,8 +46,8 @@ export default function JoinPage() {
                 email: formData.email,
                 phone: formData.phone,
                 birthdate: formData.birthdate,
-                gender: formData.gender
-
+                gender: formData.gender,
+                nickname: formData.nickname
             });
 
             if (response.status === 200) {
@@ -66,6 +67,25 @@ export default function JoinPage() {
                 <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">회원가입</h2>
                 <form className="space-y-4">
 
+                    <div className="flex flex-col">
+                        <label className="mb-1 font-medium text-gray-700">활동명</label>
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                name="nickname"
+                                value={formData.nickname}
+                                onChange={handleChange}
+                                placeholder="활동명 입력"
+                                className="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            />
+                            <button
+                                type="button"
+                                className="bg-blue-500 text-white px-3 whitespace-nowrap rounded-lg hover:bg-blue-600 transition font-semibold"
+                            >
+                                중복
+                            </button>
+                        </div>
+                    </div>
                     {/* 아이디 */}
                     <div className="flex flex-col">
                         <label className="mb-1 font-medium text-gray-700">아이디</label>

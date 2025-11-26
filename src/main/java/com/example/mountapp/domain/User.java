@@ -42,7 +42,9 @@ public class User {
     @Column(name = "GENDER" )
     private String gender;
 
-        @Column(name = "ADMIN")
+    @Column(name = "ADMIN")
     private String admin = "N";
 
+    @Column(name = "NICKNAME")
+    private String nickname;
 }

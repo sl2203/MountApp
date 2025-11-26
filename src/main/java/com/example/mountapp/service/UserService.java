@@ -38,6 +38,7 @@ public class UserService implements UserDetailsService {
         user.setPhone(dto.getPhone());
         user.setBirthdate(dto.getBirthdate());
         user.setGender(dto.getGender());
+        user.setNickname(dto.getNickname());
         return userRepository.save(user);
     }
 

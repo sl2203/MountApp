@@ -7,12 +7,12 @@ export default function LoginPage() {
     const navigate = useNavigate();
 
 
-    const [username, setUsername] = useState("");
+    const [userid, setUserid] = useState("");
     const [password, setPassword] = useState("");
 
 
     const handleLogin = async () => {
-        if (!username || !password) {
+        if (!userid || !password) {
             alert("아이디와 비밀번호를 모두 입력해주세요.");
             return;
         }
@@ -20,7 +20,7 @@ export default function LoginPage() {
         try {
 
             const response = await axios.post("/api/auth/login", {
-                username: username,
+                userid: userid,
                 password: password,
             });
 
@@ -63,8 +63,8 @@ export default function LoginPage() {
                         <input
                             type="text"
                             placeholder="아이디 입력"
-                            value={username} // 변수와 연결
-                            onChange={(e) => setUsername(e.target.value)} // 입력할 때마다 변수 업데이트
+                            value={userid} // 변수와 연결
+                            onChange={(e) => setUserid(e.target.value)} // 입력할 때마다 변수 업데이트
                             onKeyDown={handleKeyDown} // 엔터키 기능 추가
                             className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                         />

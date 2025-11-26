@@ -13,4 +13,5 @@ public class JoinRequestDto {
     private String birthdate;
     private String gender;
     private String name;
+    private String nickname;
 }
