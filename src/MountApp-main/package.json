@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && npx react-snap",
-    "lint": "eslint .",
+    "lint": "eslint ",
     "preview": "vite preview"
   },
   "dependencies": {

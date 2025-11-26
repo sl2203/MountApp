@@ -1,4 +1,4 @@
-package com.teamprj.mountapp;
+package com.example.mountapp;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
