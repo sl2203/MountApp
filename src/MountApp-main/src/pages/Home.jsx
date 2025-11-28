@@ -1,4 +1,4 @@
-//test
+
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -87,7 +87,7 @@ export default function Home() {
         <div className="bg-white rounded-lg p-3 shadow-sm min-h-[100px]">
           {loading && <p className="text-gray-400">Loading...</p>}
           {!loading && landslides.length === 0 && (
-            <p className="text-gray-400">현재 산사태 정보가 없습니다.ㅇㅇㅇ</p>
+            <p className="text-gray-400">현재 산사태 정보가 없습니다.</p>
           )}
           {!loading && landslides.length > 0 && (
             <ul className="space-y-2">
