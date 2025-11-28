@@ -7,6 +7,9 @@ export default function Map() {
     const [isMapLoaded, setIsMapLoaded] = useState(false);
 
     useEffect(() => {
+        const apiKey = import.meta.env.VITE_KAKAO_MAP_KEY;
+
+
 
         const scriptId = "kakao-map-script";
         const existingScript = document.getElementById(scriptId);
