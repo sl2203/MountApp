@@ -32,6 +32,9 @@ public class Post_Review {
     @Column(name = "VIEWS")
     private long views = 0;
 
-    @Column(name = "USERID")
+    @Column(name = "USERID", nullable = false)
     private String userid;
+
+    @Column(name = "RATING")
+    private long rating;
 }

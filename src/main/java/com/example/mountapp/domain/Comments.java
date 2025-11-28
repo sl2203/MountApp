@@ -29,8 +29,8 @@ public class Comments {
     @Column(name = "USERID",  nullable = false)
     private String postdate;
 
+    @Column(name = "POSTID", nullable = false)
+    private String postid;
 
 
-    @Column(name = "USERID")
-    private String userid;
 }
