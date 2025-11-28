@@ -18,13 +18,13 @@ export default defineConfig({
             },
 
             // (기존 safetydata가 필요하다면 다른 주소로 분리해야 합니다. 예: /safety)
-            /* "/safety": {
+            "/safety": {
               target: "https://www.safetydata.go.kr",
               changeOrigin: true,
               secure: true,
               rewrite: (path) => path.replace(/^\/safety/, ""),
             },
-            */
+
         },
     },
 });

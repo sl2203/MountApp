@@ -2,10 +2,10 @@
   import { motion } from "framer-motion";
   import { Plus, Clock, MapPin } from "lucide-react";
   import { useState } from "react";
-  import BackButton from "../layouts/BackButton.jsx";
-  import { guides } from "./guidesData.jsx";
-  import { trailsData } from "./trailsData.jsx";
-  import MountainWeather from "./MountainWeather.jsx";
+  import BackButton from "../layouts/BackButton";
+  import { guides } from "./guidesData";
+  import { trailsData } from "./trailsData";
+  import MountainWeather from "./MountainWeather";
 
   export default function Mountain() {
     const { name } = useParams();
@@ -141,16 +141,20 @@
         {/* 날씨 정보 */}
          {tab === "weather" && <MountainWeather mountain={mountain} />}
 
-          {tab === "notice" && (
-            <div className="bg-yellow-100 p-4 rounded-lg shadow-sm">
-              <h3 className="font-bold text-lg mb-2">⚠️ 유의사항</h3>
-              <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
-                <li>등산 전 반드시 날씨를 확인하세요.</li>
-                <li>비상 시 119에 즉시 신고하세요.</li>
-                <li>야간 산행은 가급적 피하세요.</li>
-                <li>쓰레기는 되가져갑시다.</li>
+         {tab === "notice" && (
+          mountain.notices &&
+          mountain.notices.length > 0 && (
+            <motion.footer
+              className="mt-6 bg-gray-100 border-l-4 border-gray-500 p-4 rounded-lg text-sm text-gray-700 mx-4"
+            >
+              <h4 className="font-bold text-gray-700 mb-2">☑️ 유의사항</h4>
+              <ul className="list-disc pl-5 space-y-1">
+                {mountain.notices.map((notice, index) => (
+                  <li key={index}>{notice}</li>
+                ))}
               </ul>
-            </div>
+              </motion.footer>
+            )
           )}
         </motion.div>
       </motion.section>

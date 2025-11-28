@@ -1,20 +1,7 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import {useEffect, useState} from "react";
 
 export default function Community() {
-    function getApi(){
-        const [userid, setuserid] = useState('');
-
-        useEffect(() => {
-            axios.get('/dbapi/userid')
-                .then((res) => {
-                    setuserid(res.data);
-                })
-        },[]);
-        return(userid);
-    }
   const navigate = useNavigate();
 
   const posts = [
@@ -41,9 +28,19 @@ export default function Community() {
         <h2 className="text-2xl font-bold">커뮤니티</h2>
       </motion.header>
 
-      <motion.section className="flex-1 flex flex-col overflow-hidden space-y-6 p-5 gap-5">
+      <motion.section className="flex-1 flex flex-col overflow-hidden space-y-6 p-4 gap-5">
+        {/* 게시글 섹션 */}
         <motion.section className="overflow-x-auto">
-          <h3 className="text-xl font-semibold mb-3">📢 게시글</h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold">📢 게시글</h3>
+            <button
+              className="px-3 py-1 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600"
+              onClick={() => navigate("/community/new-post")}
+            >
+              글쓰기
+            </button>
+          </div>
+
           <motion.div className="flex gap-4 pb-3 overflow-x-auto">
             {posts.map((post) => (
               <motion.div
@@ -54,8 +51,8 @@ export default function Community() {
               >
                 <div className="flex items-center mb-3">
                   <img className="w-10 h-10 rounded-full mr-3" />
-                  <span>{getApi()}</span>
-               </div>
+                  <span>user</span>
+                </div>
                 <h4 className="font-bold">{post.title}</h4>
                 <p className="text-gray-600">{post.comment}</p>
               </motion.div>
@@ -63,20 +60,30 @@ export default function Community() {
           </motion.div>
         </motion.section>
 
+        {/* 리뷰 섹션 */}
         <motion.section className="overflow-x-auto">
-          <h3 className="text-xl font-semibold mb-3">⭐️ 리뷰</h3>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="text-xl font-semibold">⭐️ 리뷰</h3>
+            <button
+              className="px-3 py-1 bg-green-500 text-white rounded-lg text-sm hover:bg-green-600"
+              onClick={() => navigate("/community/new-review")}
+            >
+              리뷰 작성
+            </button>
+          </div>
+
           <motion.div className="flex gap-4 pb-3 overflow-x-auto">
             {reviews.map((review) => (
               <motion.div
                 key={review.id}
-               className="flex-shrink-0 w-64 border rounded-2xl p-4 bg-white shadow-md"
+                className="flex-shrink-0 w-64 border rounded-2xl p-4 bg-white shadow-md"
                 whileHover={{ scale: 1.02 }}
                 onClick={() => navigate(`/community/review/${review.id}`)}
               >
-                 <div className="flex items-center mb-3">
+                <div className="flex items-center mb-3">
                   <img className="w-10 h-10 rounded-full mr-3" />
                   <span>user</span>
-               </div>
+                </div>
                 <div className="flex justify-between mb-2">
                   <h4 className="font-bold">{review.title}</h4>
                   <span>{review.rating}</span>

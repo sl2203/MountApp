@@ -9,7 +9,7 @@ import seorak from "../assets/seorak.jpg";
 import bukhan from "../assets/bukhan.jpeg";
 import gyeyang from "../assets/gyeyang.jpeg";
 
-import SearchBar from "../layouts/SearchBar.jsx";
+import SearchBar from "../layouts/SearchBar"; 
 
 export default function Home() {
   const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
