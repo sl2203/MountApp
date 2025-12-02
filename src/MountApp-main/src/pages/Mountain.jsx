@@ -20,17 +20,24 @@
         </motion.header>
 
         {/* 이미지 */}
-        <motion.div className="space-y-3 pt-0 px-4 pb-4 border-b-4">
-          <div className="flex overflow-x-auto space-x-4 py-2 -mx-4 px-4">
-            {mountain.image.map((img, index) => (
+        <motion.div className="space-y-3 pt-0 px-4 pb-4 border-b-4 overflow-hidden">
+          <motion.div
+            className="flex space-x-4"
+            style={{ width: "max-content" }}
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{
+              x: { repeat: Infinity, repeatType: "loop", duration: 20, ease: "linear" }
+            }}
+          >
+            {[...mountain.image, ...mountain.image].map((img, index) => (
               <img
                 key={index}
                 src={img}
                 alt={`${mountain.name}-${index}`}
-                className="h-56  w-auto rounded-lg flex-shrink-0 object-cover shadow-md"
+                className="h-56 w-auto rounded-lg flex-shrink-0 object-cover shadow-md"
               />
             ))}
-          </div>
+          </motion.div>
           <p className="text-gray-700 leading-relaxed">{mountain.description}</p>
         </motion.div>
 

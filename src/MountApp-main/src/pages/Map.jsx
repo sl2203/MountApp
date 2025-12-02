@@ -8,9 +8,6 @@ export default function Map() {
 
     useEffect(() => {
         const apiKey = import.meta.env.VITE_KAKAO_MAP_KEY;
-
-
-
         const scriptId = "kakao-map-script";
         const existingScript = document.getElementById(scriptId);
 
@@ -54,11 +51,10 @@ export default function Map() {
     }, []);
 
     return (
-        <motion.section className="p-4">
-            <motion.header className="flex flex-col items-center py-3">
+        <motion.section className="h-screen">
+            <motion.header className="flex flex-col items-center px-5 py-4">
                 <h2 className="text-2xl font-bold">지도</h2>
             </motion.header>
-
             <motion.section
                 ref={mapRef}
                 className="bg-gray-200 rounded-lg w-full relative"

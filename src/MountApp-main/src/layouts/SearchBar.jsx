@@ -22,7 +22,7 @@ export default function SearchBar() {
         placeholder="어떤 산을 찾으시나요?"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className="w-full p-2 pl-10 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+        className="w-full p-2 pl-10 border-2 border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400"
       />
       <Search
         size={20}

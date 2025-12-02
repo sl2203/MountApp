@@ -7,8 +7,8 @@ export default defineConfig({
         outDir: "dist",
     },
     server: {
+        port: 5173,
         proxy: {
-
             "/api": {
                 target: "http://localhost:8082", // 백엔드 포트 8082 (application.properties와 일치해야 함)
                 changeOrigin: true,
