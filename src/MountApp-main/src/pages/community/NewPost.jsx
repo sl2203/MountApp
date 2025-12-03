@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import BackButton from "../layouts/BackButton";
+import BackButton from "../../layouts/BackButton";
 import { Star, StarHalf } from "lucide-react";
 
 const categories = ["산", "등산용품", "맛집", "숙소"];

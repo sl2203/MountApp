@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Star, StarHalf } from "lucide-react";
-import { posts, reviews } from "../data";
+import { posts, reviews } from "../../data/data";
 
 export default function Community() {
   const navigate = useNavigate();

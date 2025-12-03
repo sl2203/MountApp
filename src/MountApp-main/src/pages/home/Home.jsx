@@ -3,13 +3,13 @@ import { motion } from "framer-motion";
 import { Megaphone } from "lucide-react";
 import { Link } from "react-router-dom";
 
-import logo from "../assets/logo.png";  
-import hanla from "../assets/hanla.jpeg";
-import seorak from "../assets/seorak.jpg";  
-import bukhan from "../assets/bukhan.jpeg";
-import gyeyang from "../assets/gyeyang.jpeg";
+import logo from "../../assets/logo.png";  
+import hanla from "../../assets/hanla.jpeg";
+import seorak from "../../assets/seorak.jpg";  
+import bukhan from "../../assets/bukhan.jpeg";
+import gyeyang from "../../assets/gyeyang.jpeg";
 
-import SearchBar from "../layouts/SearchBar"; 
+import SearchBar from "../../layouts/SearchBar";
 
 export default function Home() {
   const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };

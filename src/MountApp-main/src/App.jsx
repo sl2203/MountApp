@@ -1,16 +1,16 @@
 import { Routes, Route } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
-import Home from "./pages/Home";
-import Mountain from "./pages/Mountain";
-import Map from "./pages/Map";
-import Community from "./pages/Community";
-import MyPage from "./pages/MyPage";
-import DetailPage from "./pages/DetailPage";
-import LoginPage from "./pages/LoginPage";
-import FindAccountPage from "./pages/FindAccountPage";
-import JoinPage from "./pages/JoinPage";
-import NewPost from "./pages/NewPost";
-import Profile from "./pages/Profile";
+import Home from "./pages/home/Home";
+import Mountain from "./pages/home/Mountain";
+import Map from "./pages/map/Map";
+import Community from "./pages/community/Community";
+import MyPage from "./pages/mypage/MyPage";
+import DetailPage from "./pages/community/DetailPage";
+import LoginPage from "./pages/auth/LoginPage";
+import FindAccountPage from "./pages/auth/FindAccountPage";
+import JoinPage from "./pages/auth/JoinPage";
+import NewPost from "./pages/community/NewPost";
+import Profile from "./pages/mypage/Profile";
 
 
 function App() {
@@ -24,7 +24,7 @@ function App() {
         <Route path="/mountain/:name" element={<Mountain />} />
         <Route path="/map" element={<Map />} />
         <Route path="/community" element={<Community />} />
-        <Route path="/community/new-post" element={<NewPost type="post" />} />
+        <Route path="/community/new-post" element={<NewPost type="post"   />} />
         <Route path="/community/new-review" element={<NewPost type="review" />} />
         <Route path="/community/post/:id" element={<DetailPage dataType="post" />} />
         <Route path="/community/review/:id" element={<DetailPage dataType="review" />} />
