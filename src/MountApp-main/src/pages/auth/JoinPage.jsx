@@ -2,43 +2,93 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 
 export default function JoinPage() {
     const navigate = useNavigate();
 
-
     const [formData, setFormData] = useState({
-        userid: '',       // 아이디
-        password: '',       // 비밀번호
-        passwordConfirm: '',// 비밀번호 확인
-        phone: '',          // 전화번호
-        authCode: '',       // 인증번호 (지금은 UI만)
-        email: '',          // 이메일
-        name: '',           // 이름
-        birthdate: '',      // 생년월일
-        gender: '',          // 성별
-        nickname: ''           //활동명
+        userid: '',
+        password: '',
+        passwordConfirm: '',
+        phone: '',
+        authCode: '',
+        email: '',
+        name: '',
+        birthdate: '',
+        gender: '',
+        nickname: ''
     });
 
+    // 활동명 중복 상태
+    const [checkingNick, setCheckingNick] = useState(false);
+    const [nickCheckResult, setNickCheckResult] = useState(null);
+
+    // 아이디 중복 상태
+    const [checkingID, setCheckingID] = useState(false);
+    const [idCheckResult, setIdCheckResult] = useState(null);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
+        setFormData({ ...formData, [name]: value });
+
+        if (name === "nickname") setNickCheckResult(null);
+        if (name === "userid") setIdCheckResult(null);
     };
 
+    // 활동명 중복 검사
+    const handleCheckNickname = async () => {
+        if (!formData.nickname.trim()) {
+            alert("활동명을 입력하세요.");
+            return;
+        }
+
+        try {
+            setCheckingNick(true);
+            const takenNicknames = ["admin", "test", "hello"];
+            const isAvailable = !takenNicknames.includes(formData.nickname.trim().toLowerCase());
+            await new Promise((r) => setTimeout(r, 500));
+            setNickCheckResult(isAvailable);
+        } finally {
+            setCheckingNick(false);
+        }
+    };
+
+    // 아이디 중복 검사
+    const handleCheckID = async () => {
+        if (!formData.userid.trim()) {
+            alert("아이디를 입력하세요.");
+            return;
+        }
+
+        try {
+            setCheckingID(true);
+            const takenIDs = ["admin", "test", "hello"];
+            const isAvailable = !takenIDs.includes(formData.userid.trim().toLowerCase());
+            await new Promise((r) => setTimeout(r, 500));
+            setIdCheckResult(isAvailable);
+        } finally {
+            setCheckingID(false);
+        }
+    };
 
     const handleSubmit = async () => {
-        // 유효성 검사 (비밀번호 일치 여부 등)
+        if (nickCheckResult !== true) {
+            alert("활동명 중복 확인이 필요합니다.");
+            return;
+        }
+
+        if (idCheckResult !== true) {
+            alert("아이디 중복 확인이 필요합니다.");
+            return;
+        }
+
         if (formData.password !== formData.passwordConfirm) {
             alert("비밀번호가 일치하지 않습니다.");
             return;
         }
 
         try {
-
             const response = await axios.post('/api/auth/join', {
                 userid: formData.userid,
                 password: formData.password,
@@ -56,7 +106,6 @@ export default function JoinPage() {
             }
         } catch (error) {
             console.error("회원가입 에러:", error);
-
             alert(error.response?.data || "회원가입에 실패했습니다.");
         }
     };
@@ -65,47 +114,83 @@ export default function JoinPage() {
         <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 p-4">
             <motion.div className="bg-white rounded-2xl shadow-xl p-4 w-[310px]">
                 <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">회원가입</h2>
+
                 <form className="space-y-4">
 
+                    {/* 활동명 */}
                     <div className="flex flex-col">
                         <label className="mb-1 font-medium text-gray-700">활동명</label>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 relative">
+
                             <input
                                 type="text"
                                 name="nickname"
                                 value={formData.nickname}
                                 onChange={handleChange}
-                                placeholder="활동명 입력"
-                                className="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                placeholder="활동명"
+                                className="w-[210px] p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 pr-8"
                             />
+
+                            {nickCheckResult === true && (
+                                <CheckCircle className="absolute left-[115px] top-1/2 -translate-y-1/2 text-green-500 w-5 h-5" />
+                            )}
+                            {nickCheckResult === false && (
+                                <XCircle className="absolute left-[115px] top-1/2 -translate-y-1/2 text-red-500 w-5 h-5" />
+                            )}
+
                             <button
                                 type="button"
-                                className="bg-blue-500 text-white px-3 whitespace-nowrap rounded-lg hover:bg-blue-600 transition font-semibold"
+                                className="bg-blue-500 text-white px-3 rounded-lg hover:bg-blue-600 transition font-semibold flex items-center"
+                                onClick={handleCheckNickname}
                             >
-                                중복
+                                {checkingNick ? <Loader2 className="w-5 h-5 animate-spin" /> : "중복"}
                             </button>
                         </div>
+
+                        {nickCheckResult === true && (
+                            <p className="text-sm text-green-600 mt-1">사용 가능한 활동명입니다.</p>
+                        )}
+                        {nickCheckResult === false && (
+                            <p className="text-sm text-red-600 mt-1">이미 사용 중입니다.</p>
+                        )}
                     </div>
+
                     {/* 아이디 */}
                     <div className="flex flex-col">
                         <label className="mb-1 font-medium text-gray-700">아이디</label>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 relative">
+
                             <input
                                 type="text"
-                                name="userid" // state 이름과 일치시켜야 함
+                                name="userid"
                                 value={formData.userid}
                                 onChange={handleChange}
-                                placeholder="아이디 입력"
-                                className="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                placeholder="아이디"
+                                className="w-[210px] p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 pr-8"
                             />
+
+                            {idCheckResult === true && (
+                                <CheckCircle className="absolute left-[115px] top-1/2 -translate-y-1/2 text-green-500 w-5 h-5" />
+                            )}
+                            {idCheckResult === false && (
+                                <XCircle className="absolute left-[115px] top-1/2 -translate-y-1/2 text-red-500 w-5 h-5" />
+                            )}
+
                             <button
                                 type="button"
-                                className="bg-blue-500 text-white px-3 whitespace-nowrap rounded-lg hover:bg-blue-600 transition font-semibold"
-                                onClick={() => alert('중복 확인 기능은 백엔드 API가 필요합니다.')}
+                                className="bg-blue-500 text-white px-3 rounded-lg hover:bg-blue-600 transition font-semibold flex items-center"
+                                onClick={handleCheckID}
                             >
-                                중복
+                                {checkingID ? <Loader2 className="w-5 h-5 animate-spin" /> : "중복"}
                             </button>
                         </div>
+
+                        {idCheckResult === true && (
+                            <p className="text-sm text-green-600 mt-1">사용 가능한 아이디입니다.</p>
+                        )}
+                        {idCheckResult === false && (
+                            <p className="text-sm text-red-600 mt-1">이미 사용 중입니다.</p>
+                        )}
                     </div>
 
                     {/* 비밀번호 */}
@@ -142,21 +227,25 @@ export default function JoinPage() {
                     <div className="flex flex-col">
                         <label className="mb-1 font-medium text-gray-700">전화번호</label>
                         <div className="flex gap-2">
+                        {/* 국가번호 고정 */}
+                        <div className="flex items-center p-2 rounded-xl bg-gray-50 border border-gray-200">
+                        <span className="text-gray-500">+82</span>
+                        </div>
                             <input
                                 type="tel"
                                 name="phone"
                                 value={formData.phone}
                                 onChange={handleChange}
                                 placeholder="전화번호 입력"
-                                className="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                className="w-[160px] flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                             />
-                            <button type="button" className="bg-sky-500 text-white px-3 py-2 whitespace-nowrap rounded-lg hover:bg-sky-600 transition font-semibold">
+                            <button type="button" className="bg-sky-500 text-white px-3 py-2 rounded-lg">
                                 인증
                             </button>
                         </div>
                     </div>
 
-                    {/* 인증번호 (UI만 존재) */}
+                    {/* 인증번호 */}
                     <div className="flex flex-col">
                         <label className="mb-1 font-medium text-gray-700">인증번호</label>
                         <input
@@ -179,6 +268,7 @@ export default function JoinPage() {
                             className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                         />
                     </div>
+                    
 
                     {/* 이름 */}
                     <div className="flex flex-col">
@@ -206,25 +296,31 @@ export default function JoinPage() {
                     </div>
 
                     {/* 성별 */}
-                    <div className="flex flex-col">
-                        <label className="mb-1 font-medium text-gray-700">성별</label>
-                        <select
-                            name="gender"
-                            value={formData.gender}
-                            onChange={handleChange}
-                            className="p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        >
-                            <option value="">선택</option>
-                            <option value="MALE">남성</option>
-                            <option value="FEMALE">여성</option>
-                        </select>
+                    <div>
+                        <label className="block text-sm font-bold text-gray-800 mb-2">성별</label>
+                        <div className="flex gap-3">
+                            {["남성", "여성"].map((g) => (
+                                <button
+                                    key={g}
+                                    type="button"
+                                    onClick={() => setFormData({ ...formData, gender: g })}
+                                    className={`flex-1 py-3.5 rounded-full border text-sm font-medium transition-colors ${
+                                        formData.gender === g
+                                        ? "bg-blue-500 border-blue-500 text-white"
+                                        : "bg-white border-gray-300 text-gray-500 hover:bg-blue-50"                                      
+                                    }`}
+                                >
+                                    {g}
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
-                    {/* 제출 버튼 */}
+                    {/* 제출 */}
                     <button
                         type="button"
                         onClick={handleSubmit}
-                        className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition font-semibold"
+                        className="w-full bg-sky-500 text-white py-3 rounded-lg hover:bg-sky-600 transition font-semibold"
                     >
                         확인
                     </button>

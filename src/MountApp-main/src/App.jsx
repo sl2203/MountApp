@@ -11,6 +11,7 @@ import FindAccountPage from "./pages/auth/FindAccountPage";
 import JoinPage from "./pages/auth/JoinPage";
 import NewPost from "./pages/community/NewPost";
 import Profile from "./pages/mypage/Profile";
+import ProfileChange from "./pages/mypage/ProfileChange";
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
         <Route path="/community/review/:id" element={<DetailPage dataType="review" />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/mypage/detail" element={<Profile />} />
+        <Route path="/mypage/change" element={<ProfileChange />} />
       </Route>
     </Routes>
   );

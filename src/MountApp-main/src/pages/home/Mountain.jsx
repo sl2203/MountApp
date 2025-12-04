@@ -13,7 +13,8 @@
     const [tab, setTab] = useState("home"); 
 
     return (
-      <motion.section className="space-y-4">
+      <div className="min-h-screen bg-gray-100 flex justify-center">
+      <motion.section className="space-y-4 min-h-screen max-w-[450px] bg-white">
         <motion.header className="relative flex items-center justify-center m-4">
           <BackButton />
           <h2 className="text-2xl font-bold">{mountain.name}</h2>
@@ -165,5 +166,6 @@
           )}
         </motion.div>
       </motion.section>
+      </div> 
     );
   }
