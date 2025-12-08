@@ -28,8 +28,9 @@ public class Post_Review {
 
     private long views = 0;
 
-    @Column(nullable = false)
-    private String userid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USERID")
+    private User user;
 
     // 0이면 일반 게시글, 1 이상이면 리뷰로 간주
     private Double rating;

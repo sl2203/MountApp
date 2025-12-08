@@ -13,10 +13,18 @@ export default function Community() {
     const [posts, setPosts] = useState([]);   // 일반 게시글
     const [reviews, setReviews] = useState([]); // 리뷰
     const alertShown = useRef(false);
+
+    const getImageUrl = (path) => {
+        if (!path) return "";
+        const filename = path.replace(/^.*[\\\/]/, '');
+        return `http://localhost:8082/images/${filename}`;
+    };
+
     // 1. 백엔드 데이터 불러오기
     useEffect(() => {
-        // (1) 로컬 스토리지에서 토큰 가져오기 (로그인 시 저장한 키 이름 확인: 'token' 또는 'accessToken')
+        // (1) 로컬 스토리지에서 토큰 가져오기
         const token = localStorage.getItem("jwtToken");
+        console.log("현재 내 토큰:", token);
 
         axios.get("http://localhost:8082/api/posts", {
             // (2) 헤더에 토큰 실어 보내기
@@ -123,14 +131,16 @@ export default function Community() {
                                     className="flex-shrink-0 w-64 border rounded-2xl p-4 bg-white shadow-md cursor-pointer"
                                     whileHover={{ scale: 1.02 }}
                                     // 상세 페이지 이동 시 ID 전달
-                                    onClick={() => navigate(`/community/DetailPage/${post.postId || post.postid || post.id}`)}
+                                    onClick={() => navigate(`/community/DetailPage/${post.id}`)}
                                 >
                                     <div className="flex items-center mb-3">
                                         <div className="w-10 h-10 rounded-full bg-gray-300 mr-3 overflow-hidden">
                                             <div className="w-full h-full bg-gray-300"></div>
                                         </div>
-                                        {/* 작성자: DB USERID 컬럼 대응 */}
-                                        <span className="font-medium text-sm">{post.id || post.userid || post.author}</span>
+
+                                        <span className="font-medium text-sm">
+                                            {post.nickname || "익명"}
+                                        </span>
                                     </div>
                                     <h4 className="font-bold mb-1 truncate">{post.title}</h4>
                                     {/* 내용: DB POSTCONTENTS 컬럼 대응 */}
@@ -171,8 +181,8 @@ export default function Community() {
                                     {(review.imagePath || review.image_path || review.image) && (
                                         <div className="w-full h-32 mb-3 rounded-lg overflow-hidden">
                                             <img
-                                                src={review.imagePath || review.image_path || review.image}
-                                                alt="review-img"
+                                                src={getImageUrl(review.imagePath)}
+                                                alt="post-img"
                                                 className="w-full h-full object-cover"
                                             />
                                         </div>
@@ -180,7 +190,9 @@ export default function Community() {
 
                                     <div className="flex items-center mb-3">
                                         <div className="w-8 h-8 rounded-full bg-gray-300 mr-2"></div>
-                                        <span className="font-medium text-sm">{review.userId || review.userid || review.author}</span>
+                                        <span className="font-medium text-sm">
+                                            {review.nickname || "익명"}
+                                        </span>
                                     </div>
 
                                     <div className="flex justify-between items-center mb-2">

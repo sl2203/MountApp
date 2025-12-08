@@ -32,13 +32,14 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/images/**").permitAll()
                         // 로그인, 회원가입, 산 목록은 누구나 접속 가능
                         .requestMatchers("/api/auth/join", "/api/auth/login", "/api/mountains/**").permitAll()
                         // 그 외(탈퇴 포함)는 인증 필요
                         .anyRequest().authenticated()
                 )
 
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                    .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
