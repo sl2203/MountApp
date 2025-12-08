@@ -207,6 +207,10 @@ export default function Profile({ userProfile: initialProfile = {}, onSave = () 
               <span className="text-sm font-bold text-gray-900">전화번호</span>
               <span className="text-sm text-gray-600">{userProfile?.phone ?? "000-0000-0000"}</span>
             </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-bold text-gray-900">이메일</span>
+              <span className="text-sm text-gray-600">{userProfile?.email ?? "--"}</span>
+            </div>
           </div>
         </div>
 
