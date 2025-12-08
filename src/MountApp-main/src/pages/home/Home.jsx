@@ -56,7 +56,9 @@ export default function Home() {
       >
         <motion.header variants={fadeIn} className="flex items-center gap-2 py-3">
           <img src={logo} alt="MountApp 로고" className="w-8 h-8 object-contain" />
-          <h1 className="text-2xl font-bold">MountApp</h1>
+          <h1 className="text-3xl font-extrabold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent drop-shadow-sm">
+            MountApp
+          </h1>
         </motion.header>
 
         <motion.div variants={fadeIn}>
@@ -68,9 +70,9 @@ export default function Home() {
           <h5 className="text-xl font-bold mb-2 border-b-2 border-gray-400">산악 가이드 정보</h5>
           <div className="flex space-x-4 overflow-x-auto py-2 scrollbar-hide">
             {guides.map((guide, index) => (
-              <motion.div key={index} variants={fadeIn} className="min-w-[200px] max-w-[200px] bg-white rounded-lg shadow-md overflow-hidden flex-shrink-0 border border-gray-100">
+              <motion.div key={index} variants={fadeIn} className="min-w-[300px] max-w-[200px] bg-white rounded-lg shadow-md overflow-hidden flex-shrink-0 border border-gray-100">
                 <Link to={`/mountain/${guide.name}`}>
-                  <img src={guide.image} alt={guide.name} className="w-full h-32 object-cover" />  
+                  <img src={guide.image} alt={guide.name} className="w-full h-40 object-cover" />  
                   <div className="p-3 flex flex-col space-y-1">
                     <h3 className="text-lg font-bold">{guide.name}</h3>
                     <p className="text-sm text-gray-500 line-clamp-2">{guide.description}</p>

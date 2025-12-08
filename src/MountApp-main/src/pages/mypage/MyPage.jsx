@@ -100,7 +100,6 @@ export default function MapPage() {
         }
     };
 
-    // 화면 렌더링 (return은 여기서 한 번만!)
     return (
         <motion.section className="flex flex-col min-h-screen bg-white overflow-x-hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
 
