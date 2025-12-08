@@ -32,7 +32,7 @@ public class Post_Review {
     private String userid;
 
     // 0이면 일반 게시글, 1 이상이면 리뷰로 간주
-    private long rating;
+    private Double rating;
 
     // 카테고리 (예: "자유게시판", "맛집", "산" 등)
     private String category;
