@@ -19,7 +19,6 @@
           <BackButton />
           <h2 className="text-2xl font-bold">{mountain.name}</h2>
         </motion.header>
-
         {/* 이미지 */}
         <motion.div className="space-y-3 pt-0 px-4 pb-4 border-b-4 overflow-hidden">
           <motion.div
@@ -76,51 +75,67 @@
           className="mt-3"
         >
           {tab === "home" && (
-           <motion.div className="p-4">
-              <div className="border border-gray-300 h-40 grid grid-rows-2 grid-cols-2 rounded-lg">
-                <div className="flex flex-col items-center justify-center border-b border-gray-200">
-                  🏔️ 최고난도
-                  <span className="font-bold">1,948m</span>
+            <motion.div
+              className="px-4 py-3"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <div className="bg-white rounded-2xl shadow-lg p-5 space-y-4">
+                
+                <div className="flex justify-between">
+                  <div className="text-center w-1/2 border-r">
+                    <div className="text-gray-500 text-sm">🏔️ 최고 고도</div>
+                    <div className="text-xl font-bold mt-1">1,948m</div>
+                  </div>
+                  <div className="text-center w-1/2">
+                    <div className="text-gray-500 text-sm">🏆 난이도</div>
+                    <div className="text-xl font-bold mt-1">보통</div>
+                  </div>
                 </div>
-                <div className="flex flex-col items-center justify-center border-b border-gray-200">
-                  🏆 난이도
-                  <span className="font-bold">보통</span>
-                </div>
-                <div className="flex flex-row items-center justify-between px-6 border-gray-200 col-span-2">
-                  <span className="text-gray-700 text-sm">✉️ 리뷰</span>
-                  <button className="flex items-center justify-center rounded-full border border-gray-5 00 p-1">
-                    <Plus className="w-4 h-4 text-gray-500"/>
+
+                {/* 리뷰 */}
+                <div className="flex items-center justify-between pt-3 border-t">
+                  <span className="text-gray-600 text-sm">✉️ 리뷰</span>
+                  <button className="flex items-center justify-center rounded-full border border-gray-400 p-1 hover:bg-gray-100">
+                    <Plus className="w-4 h-4 text-gray-500" />
                   </button>
                 </div>
               </div>
             </motion.div>
           )}
-          {/* 코스정보 */}
-           {tab === "course" && (
-            <div className="p-3 space-y-3">
+
+{tab === "course" && (
+            <motion.div
+              className="p-3 space-y-4"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
               {trailsData[mountain.name]?.map((trail, index) => (
-                <div
+                <motion.div
                   key={index}
-                  className="bg-white p-3 rounded-lg shadow-md flex justify-between items-center transition-all"
+                  className="bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition-all"
+                  whileHover={{ scale: 1.01 }}
                 >
-                  <div className="space-y-1.5">
-                    <h4 className="font-bold text-md">
-                      {trail.name} <span className="text-xs">🏴</span>
+                  <div className="space-y-2">
+                    <h4 className="font-bold text-md flex items-center">
+                      {trail.name}
+                      <span className="text-xs ml-1">🏴</span>
                     </h4>
+
                     <p className="text-xs text-gray-500">{trail.description}</p>
-          
-                    <div className="flex space-x-2 pt-1">
+
+                    <div className="flex flex-wrap gap-2 pt-1">
                       {trail.tags
-                        ?.filter(tag => tag !== "탐방예약")
+                        ?.filter((tag) => tag !== "탐방예약")
                         .map((tag, i) => (
                           <span
                             key={i}
-                            className="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-800"
+                            className="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700"
                           >
                             {tag}
                           </span>
                         ))}
-          
+
                       {trail.difficulty && (
                         <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-800">
                           {trail.difficulty}
@@ -128,22 +143,20 @@
                       )}
                     </div>
                   </div>
-          
-                  <div className="flex items-center space-x-3 flex-shrink-0 ml-4  ">
-                    <div className="text-sm space-y-1.5 text-gray-700">
-                      <div className="flex items-center justify-end space-x-2">
-                        <span className="text-base" title="예상 시간"><Clock className="w-5 h-5" /></span>
-                        <span>{trail.time}</span>
-                      </div>
-                      <div className="flex items-center justify-end space-x-2">
-                        <span className="text-base" title="거리"><MapPin className="w-5 h-5" /></span>
-                        <span>{trail.distance}</span>
-                      </div>
+
+                  <div className="flex items-center justify-end space-x-4 pt-2 text-sm text-gray-700">
+                    <div className="flex items-center space-x-1">
+                      <Clock className="w-4 h-4" />
+                      <span>{trail.time}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <MapPin className="w-4 h-4" />
+                      <span>{trail.distance}</span>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           )}
 
         {/* 날씨 정보 */}

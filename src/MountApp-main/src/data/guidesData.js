@@ -10,6 +10,27 @@ import bukhan2 from "../assets/bukhan2.jpg";
 import gyeyang from "../assets/gyeyang.jpeg";
 import gyeyang1 from "../assets/gyeyang1.jpg";
 import gyeyang2 from "../assets/gyeyang2.jpg";
+import jiri from "../assets/jiri.jpg";
+import jiri1 from "../assets/jiri1.jpg";
+import jiri2 from "../assets/jiri2.jpg";
+import dobong from "../assets/dobong.jpg";
+import dobong1 from "../assets/dobong1.jpg";
+import dobong2 from "../assets/dobong2.jpg";
+import chunma from "../assets/chunma.jpg";
+import chunma1 from "../assets/chunma1.jpg";
+import chunma2 from "../assets/chunma2.jpg";
+import daedun from "../assets/daedun.jpg";
+import daedun1 from "../assets/daedun1.jpg";
+import daedun2 from "../assets/daedun2.jpg";
+import taebaek from "../assets/taebaek.jpg";
+import taebaek1 from "../assets/taebaek1.jpg";
+import taebaek2 from "../assets/taebaek2.jpg";
+import surak from "../assets/surak.jpg";
+import surak1 from "../assets/surak1.jpg";
+import surak2 from "../assets/surak2.jpg";
+import gwanak from "../assets/gwanak.jpg";
+import gwanak1 from "../assets/gwanak1.jpg";
+import gwanak2 from "../assets/gwanak2.jpg";
 
 export const guides = [
   {
@@ -84,6 +105,134 @@ export const guides = [
       "계양산성 등 문화재가 있으니 훼손되지 않도록 주의해주세요.",
       "낮은 산이지만, 등산로가 아닌 샛길로 빠지지 않도록 주의합니다.",
       "산불 조심 기간(봄, 가을)에는 화기 소지를 엄격히 금합니다."
+    ]
+  },
+  {
+    name: "지리산",
+    image: [jiri, jiri1, jiri2],
+    description:
+      "대한민국에서 두 번째로 높은 산으로, 남한 내륙 최고봉인 천왕봉을 포함합니다. 능선이 길고 완만해 다양한 장거리 산행 코스로 유명합니다.",
+    trails:
+      "천왕봉 코스 (중산리, 5.4km, 편도 4시간)\n화엄사 코스 (8.2km, 편도 4시간 30분)",
+    difficulty: "천왕봉(상), 화엄사(중상)",
+    height: "1,915m",
+    lat: 35.3273,
+    lon: 127.7302,
+    notices: [
+      "지리산은 일교차가 큰 편이므로 얇은 보온 의류를 반드시 챙기세요.",
+      "장거리 능선 산행은 체력 소모가 크므로 충분한 물과 식량이 필요합니다.",
+      "탐방 예약제가 운영되는 구간이 있으니 사전 확인이 필요합니다.",
+      "야생동물(반달가슴곰) 보호 구역 출입 금지 구간이 있습니다.",
+      "기상 악화 시 능선에 바람이 강하니 주의하세요."
+    ]
+  },
+  {
+    name: "도봉산",
+    image: [dobong, dobong1, dobong2],
+    description:
+      "서울과 경기의 명산으로, 기암괴석과 사찰이 어우러진 아름다운 경관을 자랑합니다. 초보자부터 상급자까지 즐길 수 있는 다양한 코스가 있습니다.",
+    trails:
+      "자운봉 코스 (1.8km, 편도 1시간 30분)\n오봉 코스 (3.2km, 왕복 3시간)",
+    difficulty: "자운봉(중상), 오봉(중)",
+    height: "740m",
+    lat: 37.6881,
+    lon: 127.0154,
+    notices: [
+      "암릉 구간이 많아 미끄럼 주의가 필요합니다.",
+      "주말에는 탐방객이 많아 혼잡할 수 있습니다.",
+      "비·눈 오는 날에는 암벽 구간 접근을 자제해주세요.",
+      "야생동물에게 먹이 주기를 금지합니다.",
+      "초보자는 오봉 코스를 추천합니다."
+    ]
+  },
+  {
+    name: "천마산",
+    image: [chunma, chunma1, chunma2],
+    description:
+      "경기도 남양주에 위치한 산으로, 비교적 낮지만 조망이 뛰어나며 가벼운 산책부터 등산까지 모두 즐길 수 있습니다.",
+    trails:
+      "천마산역 코스 (2.1km, 편도 1시간)\n평내호평 코스 (2.4km, 편도 1시간 10분)",
+    difficulty: "하~중",
+    height: "810m",
+    lat: 37.6545,
+    lon: 127.2331,
+    notices: [
+      "등산 초보자도 쉽게 오를 수 있으나, 겨울철에는 낙상에 주의하세요.",
+      "능선 풍경이 좋은 만큼 바람이 강한 날에는 체감 온도가 낮습니다.",
+      "샛길로 이동 시 길이 미끄러울 수 있으니 지정된 탐방로를 이용하세요.",
+      "주차장이 협소하므로 대중교통 이용을 추천합니다."
+    ]
+  },
+  {
+    name: "대둔산",
+    image: [daedun, daedun1, daedun2],
+    description:
+      "금강 구름다리와 삼선계단으로 유명한 산으로, 기암괴석과 절경이 특징입니다. 사진 명소가 많은 인기 등산지입니다.",
+    trails:
+      "대둔산 구름다리 코스 (2.5km, 편도 1시간 30분)\n삼선계단 코스 (2.2km, 편도 1시간 20분)",
+    difficulty: "중~상",
+    height: "878m",
+    lat: 36.3427,
+    lon: 127.2345,
+    notices: [
+      "구름다리와 계단 구간은 고소공포증이 있는 사람에게 다소 어려울 수 있습니다.",
+      "바람이 강한 날에는 구름다리 통행 제한이 있을 수 있습니다.",
+      "안전 난간을 반드시 잡고 이동해주세요.",
+      "사진 촬영 시 주변 등산객과 충돌하지 않도록 주의하세요."
+    ]
+  },
+  {
+    name: "태백산",
+    image: [taebaek, taebaek1, taebaek2],
+    description:
+      "겨울 설경과 일출 명소로 유명하며, 천제단이 위치한 신령스러운 산입니다. 비교적 완만한 산세로 가족 단위 등산객이 많이 찾습니다.",
+    trails:
+      "유일사 코스 (4.4km, 편도 2시간)\n당골 코스 (5.1km, 편도 2시간 30분)",
+    difficulty: "중",
+    height: "1,567m",
+    lat: 37.1005,
+    lon: 128.9855,
+    notices: [
+      "겨울철 기온이 매우 낮으므로 방한 장비 필수입니다.",
+      "눈길·빙판길 구간이 많아 아이젠 착용이 필요합니다.",
+      "정상 인근은 바람이 강하니 체온 유지에 주의하세요.",
+      "천제단은 문화재이므로 훼손하지 않도록 주의합니다."
+    ]
+  },
+  {
+    name: "수락산",
+    image: [surak, surak1, surak2],
+    description:
+      "서울과 남양주에서 쉽게 접근할 수 있으며, 암릉과 조망이 뛰어난 산입니다. 가벼운 등산부터 암릉 산행까지 즐길 수 있습니다.",
+    trails:
+      "도정봉 코스 (2.6km, 편도 1시간 20분)\n수락산역 코스 (3.0km, 편도 1시간 40분)",
+    difficulty: "중",
+    height: "640m",
+    lat: 37.6821,
+    lon: 127.0876,
+    notices: [
+      "암릉 구간이 많아 미끄럼에 주의하세요.",
+      "초보자는 수락산역 코스를 추천합니다.",
+      "주말·휴일에는 혼잡할 수 있으니 여유롭게 산행하세요.",
+      "야간 산행은 제한된 구간이 있으니 공식 안내를 확인하세요."
+    ]
+  },
+  {
+    name: "관악산",
+    image: [gwanak, gwanak1, gwanak2],
+    description:
+      "서울 남부의 대표적인 산으로 바위 능선과 뛰어난 조망을 자랑합니다. 가파른 구간이 많아 난이도는 중상 정도입니다.",
+    trails:
+      "연주대 코스 (3.2km, 편도 2시간)\n서울대 코스 (2.8km, 편도 1시간 40분)",
+    difficulty: "중상",
+    height: "632m",
+    lat: 37.4458,
+    lon: 126.9634,
+    notices: [
+      "바위 능선 구간이 많아 미끄럼 위험이 있습니다.",
+      "연주대 부근은 강풍이 잦으니 주의하세요.",
+      "초보자에게는 서울대 코스를 추천합니다.",
+      "지정 탐방로 외 출입 금지 구간이 있으니 안내 표지를 따라주세요."
     ]
   }
 ];

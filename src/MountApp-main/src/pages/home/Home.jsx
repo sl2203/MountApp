@@ -8,6 +8,13 @@ import hanla from "../../assets/hanla.jpeg";
 import seorak from "../../assets/seorak.jpg";  
 import bukhan from "../../assets/bukhan.jpeg";
 import gyeyang from "../../assets/gyeyang.jpeg";
+import jiri from "../../assets/jiri.jpg";
+import dobong from "../../assets/dobong.jpg";
+import chunma from "../../assets/chunma.jpg";
+import daedun from "../../assets/daedun.jpg";
+import taebaek from "../../assets/taebaek.jpg";
+import surak from "../../assets/surak.jpg";
+import gwanak from "../../assets/gwanak.jpg";
 
 import SearchBar from "../../layouts/SearchBar";
 
@@ -19,6 +26,13 @@ export default function Home() {
     { name: "설악산", image: seorak, description: "바위와 계곡이 많아 등산 난이도가 높은 산입니다." },
     { name: "북한산", image: bukhan, description: "서울·경계 국립공원으로, 백운대와 계곡·숲이 어우러진 산입니다." },
     { name: "계양산", image: gyeyang, description: "인천 등산객에게 인기, 일출·일몰 명소입니다." },
+    { name: "지리산", image: jiri, description: "우리나라 첫 국립공원으로, 웅장한 능선과 다양한 생태계를 자랑합니다." },
+    { name: "도봉산", image: dobong, description: "기암괴석과 절경이 특징이며, 서울 시민에게 사랑받는 명산입니다." },
+    { name: "천마산", image: chunma, description: "경기도의 대표적인 산으로, 가벼운 트레킹과 아름다운 조망을 즐길 수 있습니다." },
+    { name: "대둔산", image: daedun, description: "금강 구름다리와 암릉으로 유명한 명소로, 산세가 웅장합니다." },
+    { name: "태백산", image: taebaek, description: "겨울 설경과 일출이 아름답고, 천제단이 있는 영산입니다." },
+    { name: "수락산", image: surak, description: "서울과 남양주 인근에서 접근이 쉽고, 암릉이 많은 산입니다." },
+    { name: "관악산", image: gwanak, description: "서울 남부의 대표 명산으로, 바위 능선과 전망이 뛰어납니다." },
   ];
 
   const [wildfires, setWildfires] = useState([]);
