@@ -3,6 +3,7 @@ package com.example.mountapp.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -34,7 +35,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/images/**").permitAll()
                         // 로그인, 회원가입, 산 목록은 누구나 접속 가능
-                        .requestMatchers("/api/auth/join", "/api/auth/login", "/api/mountains/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/mountains/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/posts").authenticated()
                         // 그 외(탈퇴 포함)는 인증 필요
                         .anyRequest().authenticated()
                 )

@@ -32,6 +32,7 @@
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/mypage/detail" element={<Profile />} />
           <Route path="/mypage/change" element={<ProfileChange />} />
+          <Route path="/community/DetailPage/:id" element={<DetailPage />} />
         </Route>
       </Routes>
     );
