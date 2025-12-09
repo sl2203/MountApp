@@ -26,7 +26,7 @@ public class Comments {
     @Column(name = "COMMENTDATE", nullable = false)
     private String commentDate;
 
-    @Column(name = "USERID",  nullable = false)
+    @Column(name = "POSTDATE",  nullable = false)
     private String postdate;
 
     @Column(name = "POSTID", nullable = false)
