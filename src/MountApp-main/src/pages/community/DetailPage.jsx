@@ -169,16 +169,14 @@
                     alt="post-img"
                     className="w-full h-full object-cover"
                 />
-                <div className="flex items-center space-x-5 mt-3 px-1 text-2xl">
-                    <button onClick={onLikeClick}>{liked ? "❤️" : "🤍"}</button>
-                </div>
-                <p className="px-1 mt-1 text-sm font-semibold">좋아요 {likeCount}개</p>
-
                 {/* 본문 내용: DB 컬럼명 postContents, comment 등 호환 */}
                 <p className="px-1 mt-4 text-gray-800 leading-relaxed whitespace-pre-line">
                     {item.postContents || item.comment || item.content}
                 </p>
-
+                <div className="flex items-center space-x-5 mt-3 px-1 text-2xl">
+                    <button onClick={onLikeClick}>{liked ? "❤️" : "🤍"}</button>
+                </div>
+                <p className="px-1 mt-1 text-sm font-semibold">좋아요 {likeCount}개</p>
                 {/* 댓글 섹션 (현재는 더미, 추후 API 연동 필요) */}
                 <div ref={commentRef} className="mt-8 px-1">
                     <h3 className="text-lg font-semibold mb-4">댓글</h3>
