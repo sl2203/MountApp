@@ -24,7 +24,12 @@ export default defineConfig({
               secure: true,
               rewrite: (path) => path.replace(/^\/safety/, ""),
             },
-
+            "/weather-api": {
+                target: "https://api.openweathermap.org",
+                changeOrigin: true,
+                secure: false, // https 인증서 무시 (개발환경용)
+                rewrite: (path) => path.replace(/^\/weather-api/, ""), // 요청 보낼 때 '/weather-api' 제거
+            },
         },
     },
 });

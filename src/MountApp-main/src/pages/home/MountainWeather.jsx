@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+    import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Sunrise, Sunset } from "lucide-react";
 const API_KEY = "a0ffee904751e8e4191ca6b7ea75f109"; 
@@ -32,7 +32,7 @@ export default function MountainWeather({ mountain }) {
       setError(null);
 
       try {
-        const url = `https://api.openweathermap.org/data/3.0/onecall?lat=${mountain.lat}&lon=${mountain.lon}&exclude=minutely,hourly,alerts&units=metric&lang=kr&appid=${API_KEY}`;
+        const url = `/weather-api/data/3.0/onecall?lat=${mountain.lat}&lon=${mountain.lon}&exclude=minutely,hourly,alerts&units=metric&lang=kr&appid=${API_KEY}`;
         const response = await axios.get(url);
         setData(response.data);
       } catch (err) {

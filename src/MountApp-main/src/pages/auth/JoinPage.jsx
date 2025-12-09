@@ -296,18 +296,23 @@ export default function JoinPage() {
                         <div>
                             <label className="block text-sm font-bold text-gray-800 mb-2">성별</label>
                             <div className="flex gap-3">
-                                {["남성", "여성"].map((g) => (
+                                {[
+                                    { label: "남성", value: "MALE" },
+                                    { label: "여성", value: "FEMALE" }
+                                ].map((option) => (
                                     <button
-                                        key={g}
+                                        key={option.value}
                                         type="button"
-                                        onClick={() => setFormData({ ...formData, gender: g })}
+                                        // 클릭 시: 화면에 보이는 label(남성)이 아니라 value(MALE)를 저장함
+                                        onClick={() => setFormData({ ...formData, gender: option.value })}
                                         className={`flex-1 py-3.5 rounded-full border text-sm font-medium transition-colors ${
-                                            formData.gender === g
-                                            ? "bg-blue-500 border-blue-500 text-white"
-                                            : "bg-white border-gray-300 text-gray-500 hover:bg-blue-50"
+                                            // 현재 저장된 값(MALE/FEMALE)과 버튼의 value를 비교해서 색상 변경
+                                            formData.gender === option.value
+                                                ? "bg-blue-500 border-blue-500 text-white"
+                                                : "bg-white border-gray-300 text-gray-500 hover:bg-blue-50"
                                         }`}
                                     >
-                                        {g}
+                                        {option.label} {/* 화면에는 한글(label)을 보여줌 */}
                                     </button>
                                 ))}
                             </div>
