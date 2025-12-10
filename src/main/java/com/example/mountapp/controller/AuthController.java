@@ -61,4 +61,21 @@ public class AuthController {
 
         return ResponseEntity.ok("회원 탈퇴 성공");
     }
+
+    @GetMapping("/check-nickname")
+    public ResponseEntity<Boolean> checkNickname(@RequestParam String nickname) {
+        // DB에 존재하면 true, 없으면 false를 반환하는 서비스 로직
+        boolean isExist = userService.existsByNickname(nickname);
+
+        // 프론트 로직상 "사용 가능"이 true여야 하므로, 존재하지 않아야(!isExist) true 반환
+        return ResponseEntity.ok(!isExist);
+    }
+
+    @GetMapping("/check-userid")
+    public ResponseEntity<Boolean> checkUserid(@RequestParam String userid) {
+        boolean isExist = userService.existsByUserid(userid);
+
+        // 존재하지 않아야 사용 가능
+        return ResponseEntity.ok(!isExist);
+    }
 }

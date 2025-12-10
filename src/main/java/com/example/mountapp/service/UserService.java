@@ -75,4 +75,12 @@ public class UserService implements UserDetailsService {
                 new ArrayList<>()
         );
     }
+    public boolean existsByNickname(String nickname) {
+        // 개수가 0보다 크면 true(존재함), 아니면 false
+        return userRepository.countByNickname(nickname) > 0;
+    }
+
+    public boolean existsByUserid(String userid) {
+        return userRepository.countByUserid(userid) > 0;
+    }
 }

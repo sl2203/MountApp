@@ -42,10 +42,22 @@ export default function JoinPage() {
 
         try {
             setCheckingNick(true);
-            const takenNicknames = ["admin", "test", "hello"];
-            const isAvailable = !takenNicknames.includes(formData.nickname.trim().toLowerCase());
-            await new Promise((r) => setTimeout(r, 500));
-            setNickCheckResult(isAvailable);
+
+            // [수정] 백엔드 API 호출 (GET 방식 예시)
+            // 파라미터로 nickname을 보냄
+            const response = await axios.get(`/api/auth/check-nickname`, {
+                params: { nickname: formData.nickname }
+            });
+
+            // 서버에서 사용 가능하면 true, 불가능하면 false를 반환한다고 가정
+            // response.data가 true이면 사용 가능
+            setNickCheckResult(response.data);
+
+        } catch (error) {
+            console.error("중복 확인 에러:", error);
+            // 에러 발생 시(서버 오류 등) 일단 false 처리하거나 에러 메시지 표시
+            setNickCheckResult(false);
+            alert("중복 확인 중 오류가 발생했습니다.");
         } finally {
             setCheckingNick(false);
         }
@@ -59,10 +71,19 @@ export default function JoinPage() {
 
         try {
             setCheckingID(true);
-            const takenIDs = ["admin", "test", "hello"];
-            const isAvailable = !takenIDs.includes(formData.userid.trim().toLowerCase());
-            await new Promise((r) => setTimeout(r, 500));
-            setIdCheckResult(isAvailable);
+
+            // [수정] 백엔드 API 호출
+            const response = await axios.get(`/api/auth/check-userid`, {
+                params: { userid: formData.userid }
+            });
+
+            // response.data가 true이면 사용 가능
+            setIdCheckResult(response.data);
+
+        } catch (error) {
+            console.error("중복 확인 에러:", error);
+            setIdCheckResult(false);
+            alert("중복 확인 중 오류가 발생했습니다.");
         } finally {
             setCheckingID(false);
         }
