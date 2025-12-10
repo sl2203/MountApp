@@ -4,14 +4,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy; // 추가됨
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint; // 추가됨
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -21,49 +25,55 @@ import java.util.Collections;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-/*
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-*/
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // 1. CSRF 비활성화 (JWT 사용 시 필수)
                 .csrf(AbstractHttpConfigurer::disable)
+
+                // 2. CORS 설정 적용
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+                // 3. 세션 관리 정책 설정 (Stateless) - [수정됨: 필수]
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
+                // 4. 요청 권한 설정
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/images/**").permitAll()
-                        // 로그인, 회원가입, 산 목록은 누구나 접속 가능
                         .requestMatchers("/api/auth/**", "/api/mountains/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/posts").authenticated()
-                        // 그 외(탈퇴 포함)는 인증 필요
                         .anyRequest().authenticated()
                 )
 
-                    .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                // 5. 예외 처리 설정 (API 응답을 위해) - [수정됨: 권장]
+                .exceptionHandling(exception -> exception
+                        // 인증되지 않은 요청에 대해 401 Unauthorized 반환 (로그인 페이지 리다이렉트 방지)
+                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                )
+
+                // 6. 필터 순서 설정
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // 프론트엔드 주소 허용
-        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
-
-        // 허용할 HTTP 메서드
+        // 실제 운영 환경에서는 application.yml에서 읽어오는 것이 좋음
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173","http://127.0.0.1:*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-
-        // 허용할 헤더 (JWT 로그인 등을 위해 필요)
         configuration.setAllowedHeaders(Collections.singletonList("*"));
-
-        // 자격 증명 허용 (쿠키, 세션 등)
         configuration.setAllowCredentials(true);
-
+        // Expose Headers가 필요한 경우 추가 (예: 파일 다운로드 파일명 등)
+        // configuration.setExposedHeaders(Collections.singletonList("Authorization"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // 모든 경로에 적용
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 }
