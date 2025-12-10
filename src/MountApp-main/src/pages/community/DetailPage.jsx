@@ -37,6 +37,14 @@
 
                     const data = response.data;
                     setItem(data);
+                    setLikeCount(data.likeCount || 0);
+
+                    if (token) {
+                        const likeStatusRes = await axios.get(`http://localhost:8082/api/likes/${id}/status`, {
+                            headers: { Authorization: `Bearer ${token}` },
+                        });
+                        setLiked(likeStatusRes.data); // true or false
+                    }
 
                     // 데이터가 로드되면 좋아요 수나 기타 초기값 설정 가능
                     // setLikeCount(data.likes || 0);
@@ -51,6 +59,34 @@
 
             fetchDetail();
         }, [id, navigate]);
+        const onLikeClick = async () => {
+            try {
+                const token = localStorage.getItem("jwtToken");
+
+                // 토큰 없으면 로그인 유도
+                if (!token || token === "null" || token === "undefined") {
+                    alert("로그인이 필요합니다.");
+                    // navigate("/login"); // 로그인 페이지로 보내도 됨
+                    return;
+                }
+
+                // 1. 서버에 토글 요청
+                const response = await axios.post(`http://localhost:8082/api/likes/${id}`, {}, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                // 2. [핵심] 서버가 돌려준 최신 값으로 화면 즉시 업데이트
+                // response.data = { liked: true, count: 5 }
+                setLiked(response.data.liked);
+                setLikeCount(response.data.count);
+
+            } catch (error) {
+                console.error("좋아요 오류:", error);
+                alert("오류가 발생했습니다.");
+            }
+        };
 
         // 2. 게시글 삭제 핸들러
         const handleDelete = async () => {
@@ -84,11 +120,7 @@
         // Community.jsx 로직에 따라 rating이 0보다 크면 리뷰로 간주
         const isReview = (item.rating && item.rating > 0) || location.pathname.includes("/review");
 
-        const onLikeClick = () => {
-            // 추후 서버에 좋아요 요청 보내는 로직 추가 필요
-            setLiked(!liked);
-            setLikeCount((prev) => (liked ? prev - 1 : prev + 1));
-        };
+
 
         // 별점 렌더링 함수
         const renderStars = (score) => {
@@ -164,18 +196,24 @@
                     {/* 리뷰일 경우에만 별점 표시 */}
                     {isReview && <div>{renderStars(item.rating)}</div>}
                 </div>
-                <img
-                    src={getImageUrl(item.imagePath)}
-                    alt="post-img"
-                    className="w-full h-full object-cover"
-                />
+                {item.imagePath && (
+                    <img
+                        src={getImageUrl(item.imagePath)}
+                        alt="post-img"
+                        className="w-full h-auto object-cover mt-4 rounded-lg" // 디자인 개선: h-full -> h-auto, 마진/라운드 추가
+                    />
+                )}
                 {/* 본문 내용: DB 컬럼명 postContents, comment 등 호환 */}
                 <p className="px-1 mt-4 text-gray-800 leading-relaxed whitespace-pre-line">
                     {item.postContents || item.comment || item.content}
                 </p>
                 <div className="flex items-center space-x-5 mt-3 px-1 text-2xl">
-                    <button onClick={onLikeClick}>{liked ? "❤️" : "🤍"}</button>
+                    <button onClick={onLikeClick}>
+                        {/* liked 상태에 따라 하트 모양 변경 */}
+                        {liked ? "❤️" : "🤍"}
+                    </button>
                 </div>
+                {/* likeCount 상태를 화면에 출력 */}
                 <p className="px-1 mt-1 text-sm font-semibold">좋아요 {likeCount}개</p>
                 {/* 댓글 섹션 (현재는 더미, 추후 API 연동 필요) */}
                 <div ref={commentRef} className="mt-8 px-1">

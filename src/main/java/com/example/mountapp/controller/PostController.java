@@ -21,21 +21,39 @@ public class PostController {
 
     private final PostService postService;
 
-    // (기존 GET, DELETE 메서드들...)
     @GetMapping("/posts")
     public List<PostResponseDTO> getAllPosts() {
         return postService.getAllPosts();
     }
 
+    // ▼▼▼ [수정된 부분: 상세 조회] ▼▼▼
     @GetMapping("/posts/{id}")
-    public ResponseEntity<PostResponseDTO> getPostById(@PathVariable Long id) {
+    public ResponseEntity<PostResponseDTO> getPostById(
+            @PathVariable Long id,
+            @AuthenticationPrincipal Object principal // 로그인 정보를 받아옵니다
+    ) {
         try {
-            PostResponseDTO postDto = postService.getPostById(id);
+            // 1. 현재 로그인한 유저 아이디 추출
+            String userid = null;
+
+            if (principal instanceof UserDetails) {
+                userid = ((UserDetails) principal).getUsername();
+            } else if (principal instanceof String) {
+                userid = (String) principal;
+            }
+            // principal이 null이면 비로그인 유저 (userid = null 상태로 서비스 전달)
+
+            // 2. 서비스 호출 (getPostById -> getPostDetail로 변경)
+            // 파라미터로 id와 userid를 같이 넘겨야 "내가 좋아요 눌렀는지" 확인 가능
+            PostResponseDTO postDto = postService.getPostDetail(id, userid);
+
             return ResponseEntity.ok(postDto);
+
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
     }
+    // ▲▲▲ [수정 끝] ▲▲▲
 
     @DeleteMapping("/posts/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
@@ -43,24 +61,18 @@ public class PostController {
         return isDeleted ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
-    // ▼▼▼ [게시글 작성 API 추가] ▼▼▼
-    // Multipart 요청(이미지+JSON)을 받기 위한 설정
     @PostMapping(value = "/posts", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> createPost(
-            // 1. JSON 데이터 ("data" 라는 키값으로 옴)
             @RequestPart(value = "data") PostRequestDTO postRequestDTO,
-            // 2. 이미지 파일들 ("files" 라는 키값으로 옴)
             @RequestPart(value = "files", required = false) List<MultipartFile> files,
-            // 3. 현재 로그인한 유저 ID (JWT 필터에서 넣어준 값)
             @AuthenticationPrincipal Object principal
     ) {
         String userid;
 
-        // Principal 타입 체크 후 ID 추출
         if (principal instanceof UserDetails) {
-            userid = ((UserDetails) principal).getUsername(); // UserDetails인 경우
+            userid = ((UserDetails) principal).getUsername();
         } else if (principal instanceof String) {
-            userid = (String) principal; // String인 경우
+            userid = (String) principal;
         } else {
             return ResponseEntity.status(403).body("로그인 정보가 올바르지 않습니다.");
         }
@@ -75,6 +87,5 @@ public class PostController {
             e.printStackTrace();
             return ResponseEntity.badRequest().body("등록 실패: " + e.getMessage());
         }
-
     }
 }

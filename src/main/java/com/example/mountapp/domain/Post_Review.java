@@ -26,8 +26,6 @@ public class Post_Review {
     @Column(nullable = false)
     private String postdate;
 
-    private long views = 0;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USERID")
     private User user;
@@ -40,6 +38,8 @@ public class Post_Review {
 
     @Column(name = "IMAGE_PATH")
     private String imagePath; // 이미지 파일명 (콤마로 구분된 문자열)
+
+    private int likes = 0;
 
     @PrePersist
     public void onPrePersist() {
