@@ -46,4 +46,6 @@ public class User {
 
     @Column(name = "NICKNAME")
     private String nickname;
+
+
 }

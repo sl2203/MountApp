@@ -2,35 +2,32 @@ package com.example.mountapp.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Entity
 @Getter
 @Setter
-@Entity
+@NoArgsConstructor
 @Table(name = "COMMENTS")
 public class Comments {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comment_seq")
-    @SequenceGenerator(
-            name = "comment_seq",
-            sequenceName = "COMMENT_ID_SEQ",
-            allocationSize = 1
-    )
-    // 사용자 고유 ID
-    private long COMMENTID;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comment_seq_gen")
+    @SequenceGenerator(name = "comment_seq_gen", sequenceName = "COMMENT_SEQ", allocationSize = 1)
+    @Column(name = "COMMENTID")
+    private Long commentId;
 
-    @Column(name = "COMMENTCONTENTS", nullable = false)
+    @Column(name = "COMMENTCONTENTS")
     private String commentContents;
 
-    @Column(name = "COMMENTDATE", nullable = false)
+    @Column(name = "COMMENTDATE")
     private String commentDate;
 
-    @Column(name = "POSTDATE",  nullable = false)
-    private String postdate;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USERID", referencedColumnName = "USERID")
+    private User user;
 
-    @Column(name = "POSTID", nullable = false)
-    private String postid;
-
-
+    @Column(name = "POSTID")
+    private Long postId;
 }

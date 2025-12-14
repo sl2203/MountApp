@@ -10,7 +10,8 @@
         const location = useLocation();
         const navigate = useNavigate();
         const commentRef = useRef(null);
-
+        const [comments, setComments] = useState([]);
+        const [commentContent, setCommentContent] = useState("");
         // 서버에서 받아온 데이터를 저장할 State
         const [item, setItem] = useState(null);
         const [loading, setLoading] = useState(true);
@@ -45,7 +46,10 @@
                         });
                         setLiked(likeStatusRes.data); // true or false
                     }
-
+                    const commentsResponse = await axios.get(`http://localhost:8082/api/posts/${id}/comments`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    setComments(commentsResponse.data);
                     // 데이터가 로드되면 좋아요 수나 기타 초기값 설정 가능
                     // setLikeCount(data.likes || 0);
                 } catch (error) {
@@ -59,6 +63,49 @@
 
             fetchDetail();
         }, [id, navigate]);
+        const handleCommentSubmit = async () => {
+            if (!commentContent.trim()) {
+                alert("댓글 내용을 입력해주세요.");
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem("jwtToken");
+                // 로그인 체크 (토큰 없으면 막기)
+                if (!token) {
+                    alert("로그인이 필요합니다.");
+                    return;
+                }
+
+                // 로그인한 사용자 ID 가져오기 (토큰 디코딩하거나, localStorage에 저장된 ID 사용)
+                // 예시: localStorage.getItem("userId")에 아이디가 있다고 가정
+                const currentUserId = localStorage.getItem("userId");
+
+                // 서버로 전송할 데이터
+                const newCommentData = {
+                    userId: currentUserId,
+                    commentContents: commentContent
+                };
+
+                await axios.post(`http://localhost:8082/api/posts/${id}/comments`, newCommentData, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                // 성공 시 처리
+                setCommentContent(""); // 입력창 비우기
+                alert("댓글이 등록되었습니다.");
+
+                // 댓글 목록 새로고침 (다시 불러오기)
+                const commentsResponse = await axios.get(`http://localhost:8082/api/posts/${id}/comments`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setComments(commentsResponse.data);
+
+            } catch (error) {
+                console.error("댓글 등록 실패:", error);
+                alert("댓글 등록 중 오류가 발생했습니다.");
+            }
+        };
         const onLikeClick = async () => {
             try {
                 const token = localStorage.getItem("jwtToken");
@@ -119,8 +166,6 @@
         // 데이터 타입 판별 (리뷰인지 일반 글인지 rating으로 판단하거나 URL로 판단)
         // Community.jsx 로직에 따라 rating이 0보다 크면 리뷰로 간주
         const isReview = (item.rating && item.rating > 0) || location.pathname.includes("/review");
-
-
 
         // 별점 렌더링 함수
         const renderStars = (score) => {
@@ -215,23 +260,54 @@
                 </div>
                 {/* likeCount 상태를 화면에 출력 */}
                 <p className="px-1 mt-1 text-sm font-semibold">좋아요 {likeCount}개</p>
-                {/* 댓글 섹션 (현재는 더미, 추후 API 연동 필요) */}
+                {/* 댓글 섹션 */}
                 <div ref={commentRef} className="mt-8 px-1">
-                    <h3 className="text-lg font-semibold mb-4">댓글</h3>
-                    {[1, 2, 3].map((i) => (
-                        <div
-                            key={i}
-                            className="flex items-start bg-white shadow-md p-5 rounded-xl mb-3 hover:bg-gray-50 transition duration-200 space-x-4"
+                    <h3 className="text-lg font-semibold mb-4">댓글 ({comments.length})</h3>
+                    <div className="flex gap-2 mb-6">
+                        <input
+                            type="text"
+                            className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                            placeholder="댓글을 입력하세요..."
+                            value={commentContent}
+                            onChange={(e) => setCommentContent(e.target.value)}
+                        />
+                        <button
+                            className="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-600 transition"
+                            onClick={handleCommentSubmit}
                         >
-                            <div className="w-10 h-10 rounded-full bg-gray-300 flex-shrink-0"></div>
-                            <div className="flex-1">
-                                <p className="font-semibold mb-1">User {i}</p>
-                                <p className="text-gray-700 leading-relaxed">와 정말 이뻐요</p>
+                            등록
+                        </button>
+                    </div>
+                    {comments.length === 0 ? (
+                        <p className="text-gray-500 text-center py-4">아직 댓글이 없습니다.</p>
+                    ) : (
+                        comments.map((comment) => (
+                            <div
+                                // DB의 Primary Key인 COMMENTID를 key로 사용
+                                // 백엔드 엔티티 필드명이 camelCase라면 commentId일 확률이 높음
+                                key={comment.commentId}
+                                className="flex items-start bg-white shadow-md p-5 rounded-xl mb-3 hover:bg-gray-50 transition duration-200 space-x-4"
+                            >
+                                <div className="w-10 h-10 rounded-full bg-gray-300 flex-shrink-0 flex items-center justify-center text-xs font-bold text-gray-500">
+                                    {/* 프로필 이미지가 없다면 유저ID 앞글자만 표시하는 등 처리 */}
+                                    {comment.userId ? comment.userId.substring(0, 2) : "??"}
+                                </div>
+                                <div className="flex-1">
+                                    <div className="flex justify-between items-center mb-1">
+                                        {/* DB 컬럼: USERID -> JSON: userId */}
+                                        <p className="font-semibold">{comment.nickname}</p>
+                                        {/* DB 컬럼: COMMENTDATE -> JSON: commentDate */}
+                                        <span className="text-xs text-gray-400">{comment.commentDate}</span>
+                                    </div>
+                                    {/* DB 컬럼: COMMENTCONTENTS -> JSON: commentContents */}
+                                    <p className="text-gray-700 leading-relaxed whitespace-pre-line">
+                                        {comment.commentContents}
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))
+                    )}
                 </div>
-
                 {/* 삭제 확인 모달 */}
                 {showDeleteModal && (
                     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
