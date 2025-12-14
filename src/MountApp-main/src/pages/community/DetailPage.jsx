@@ -188,7 +188,7 @@
                         <div className="w-11 h-11 rounded-full bg-gray-300"></div>
                         <div className="ml-3">
                             {/* DB 컬럼명 매핑: userId, userid, author 등 */}
-                            <p className="font-semibold">{item.userid || "User"}</p>
+                            <p className="font-semibold">{item.nickname}</p>
                             {/* DB 컬럼명 매핑: created_at, date 등 */}
                             <p className="text-xs text-gray-500">{item.postdate || "날짜 미상"}</p>
                         </div>
