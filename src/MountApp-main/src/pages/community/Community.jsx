@@ -135,7 +135,9 @@ export default function Community() {
                                 >
                                     <div className="flex items-center mb-3">
                                         <div className="w-10 h-10 rounded-full bg-gray-300 mr-3 overflow-hidden">
-                                            <div className="w-full h-full bg-gray-300"></div>
+                                            <div className="w-10 h-10 rounded-full bg-gray-300 flex-shrink-0 flex items-center justify-center text-xs font-bold text-gray-500">
+                                                {post.nickname ? post.nickname.substring(0, 2) : "??"}
+                                            </div>
                                         </div>
 
                                         <span className="font-medium text-sm">
@@ -189,7 +191,9 @@ export default function Community() {
                                     )}
 
                                     <div className="flex items-center mb-3">
-                                        <div className="w-8 h-8 rounded-full bg-gray-300 mr-2"></div>
+                                        <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden flex-shrink-0 flex items-center justify-center text-xs font-bold text-gray-500">
+                                            {review.nickname ? review.nickname.substring(0, 2) : "??"}
+                                        </div>
                                         <span className="font-medium text-sm">
                                             {review.nickname || "익명"}
                                         </span>

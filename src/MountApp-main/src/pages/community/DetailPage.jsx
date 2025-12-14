@@ -290,7 +290,7 @@
                             >
                                 <div className="w-10 h-10 rounded-full bg-gray-300 flex-shrink-0 flex items-center justify-center text-xs font-bold text-gray-500">
                                     {/* 프로필 이미지가 없다면 유저ID 앞글자만 표시하는 등 처리 */}
-                                    {comment.userId ? comment.userId.substring(0, 2) : "??"}
+                                    {comment.nickname ? comment.nickname.substring(0, 2) : "??"}
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex justify-between items-center mb-1">
