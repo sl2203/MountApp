@@ -1,12 +1,12 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion"; // AnimatePresence 추가
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, FileText, Heart, MessageSquare, ThumbsUp } from "lucide-react"; // 아이콘 추가
 
 // --- 하위 컴포넌트 (디자인 유지) ---
 const StatItem = ({ label, value }) => (
-    <div className="flex flex-col items-center justify-center w-1/3 py-4">
+    <div className="flex flex-col items-center justify-center flex-1 py-4">
         <span className="text-gray-500 text-sm mb-1">{label}</span>
         <span className="text-xl font-bold text-gray-800">{value}</span>
     </div>
@@ -43,6 +43,37 @@ const Modal = ({ title, description, onCancel, onConfirm, confirmText = "확인"
     </div>
 );
 
+// --- [추가됨] 게시글/리뷰 카드 컴포넌트 ---
+const PostCard = ({ post }) => (
+    <motion.div
+        layout
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        className="block bg-white border border-gray-200 rounded-xl p-4 mb-3 hover:border-gray-400 transition-colors cursor-pointer"
+    >
+        <div className="flex justify-between items-start mb-2">
+            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${post.type === 'REVIEW' ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-600'}`}>
+                {post.type === 'REVIEW' ? '리뷰' : '자유게시판'}
+            </span>
+            <span className="text-xs text-gray-400">{post.date}</span>
+        </div>
+        <h4 className="text-base font-bold text-gray-900 mb-1 line-clamp-1">{post.title}</h4>
+        <p className="text-sm text-gray-500 line-clamp-2 mb-3 h-10">{post.content}</p>
+
+        <div className="flex items-center gap-3 border-t border-gray-100 pt-3">
+            <div className="flex items-center gap-1 text-gray-400 text-xs">
+                <ThumbsUp size={14} />
+                <span>{post.likes}</span>
+            </div>
+            <div className="flex items-center gap-1 text-gray-400 text-xs">
+                <MessageSquare size={14} />
+                <span>{post.comments}</span>
+            </div>
+        </div>
+    </motion.div>
+);
+
 // --- 메인 페이지 ---
 export default function MyPage() {
     const navigate = useNavigate();
@@ -50,24 +81,27 @@ export default function MyPage() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [loading, setLoading] = useState(true);
     const [imgError, setImgError] = useState(false);
+
+    // [추가됨] 탭 상태 및 더미 데이터
+    const [activeTab, setActiveTab] = useState("ALL"); // ALL, POST, REVIEW
+    const [myPosts, setMyPosts] = useState([]);
+
     const BACKEND_URL = "http://localhost:8082";
+
     const getProfileImageUrl = (path) => {
         if (!path) return null;
-        // 이미 http로 시작하는 완전한 URL이면 그대로 사용 (소셜 로그인 등)
         if (path.startsWith("http")) return path;
-        // 아니면 백엔드 주소를 앞에 붙임
         return `${BACKEND_URL}${path}`;
     };
-    // 사용자 정보 상태 관리
+
     const [user, setUser] = useState({
         name: "",
         email: "",
         userid: "",
-        profileImage: null, // [추가] 프로필 이미지 경로 저장용
+        profileImage: null,
         stats: { point: 0, like: 0 },
     });
 
-    // 1. 페이지 로드 시 사용자 정보 가져오기
     useEffect(() => {
         const fetchUserInfo = async () => {
             const token = localStorage.getItem("jwtToken");
@@ -80,9 +114,7 @@ export default function MyPage() {
 
             try {
                 const response = await axios.get("/api/auth/me", {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
+                    headers: { Authorization: `Bearer ${token}` }
                 });
                 const userData = response.data;
 
@@ -95,14 +127,23 @@ export default function MyPage() {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 const likeCount = likeCountRes.data;
+
                 setUser({
                     name: userData.nickname || userData.name,
                     email: userData.email,
                     userid: userData.userid,
-                    // [추가] DB에서 가져온 프로필 이미지 경로 매핑
                     profileImage: userData.profileImage,
                     stats: { point: postCount, like: likeCount }
                 });
+
+                // [추가됨] 더미 데이터 설정 (나중에 실제 API 호출로 대체하세요)
+                // 예: const postsRes = await axios.get(`${BACKEND_URL}/api/posts/my`, ...);
+                setMyPosts([
+                    { id: 1, type: 'POST', title: 'React 렌더링 질문있습니다.', content: 'useEffect가 두 번 실행되는데 이유가 뭘까요? strict mode 때문인가요?', date: '2024.05.20', likes: 12, comments: 4 },
+                    { id: 2, type: 'REVIEW', title: '이번 프로젝트 후기 남깁니다.', content: '정말 많은 것을 배울 수 있었던 프로젝트였습니다. 팀원분들 고생 많으셨습니다.', date: '2024.05.18', likes: 35, comments: 10 },
+                    { id: 3, type: 'POST', title: '프론트엔드 로드맵 공유', content: '제가 공부했던 순서대로 정리해봤습니다. 도움 되시길 바랍니다.', date: '2024.05.15', likes: 50, comments: 22 },
+                ]);
+
                 setLoading(false);
 
             } catch (error) {
@@ -116,15 +157,12 @@ export default function MyPage() {
         fetchUserInfo();
     }, [navigate]);
 
-    // 2. 로그아웃 핸들러
     const handleLogout = () => {
         localStorage.removeItem("jwtToken");
-        console.log("로그아웃 완료");
         setShowLogoutModal(false);
         navigate("/login");
     };
 
-    // 3. 회원 탈퇴 핸들러
     const handleDeleteAccount = async () => {
         try {
             const token = localStorage.getItem("jwtToken");
@@ -140,7 +178,6 @@ export default function MyPage() {
             });
 
             if (response.status === 200) {
-                console.log("계정 탈퇴 완료");
                 localStorage.clear();
                 setShowDeleteModal(false);
                 alert("회원 탈퇴가 성공적으로 처리되었습니다.");
@@ -153,6 +190,12 @@ export default function MyPage() {
         }
     };
 
+    // [추가됨] 필터링 로직
+    const filteredPosts = myPosts.filter(post => {
+        if (activeTab === 'ALL') return true;
+        return post.type === activeTab;
+    });
+
     if (loading) {
         return <div className="min-h-screen flex items-center justify-center bg-white">로딩 중...</div>;
     }
@@ -163,7 +206,6 @@ export default function MyPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
         >
-
             {/* 상단 헤더 */}
             <header className="flex items-center justify-center px-5 py-4 bg-white relative">
                 <h1 className="text-2xl font-bold text-gray-900">마이페이지</h1>
@@ -173,25 +215,21 @@ export default function MyPage() {
             {/* 메인 컨텐츠 */}
             <div className="flex-1 overflow-y-auto pb-10">
 
-                {/* 프로필 요약 (DB 데이터 바인딩) */}
+                {/* 프로필 요약 */}
                 <div className="px-5 py-6 flex items-center justify-between bg-white">
                     <div className="flex items-center gap-4">
-                        {/* ▼▼▼ [수정됨] 프로필 이미지 UI ▼▼▼ */}
                         <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border border-gray-200">
-                            {/* 1. 이미지가 있고 & 2. 에러가 나지 않았을 때만 이미지를 보여줌 */}
                             {user.profileImage && !imgError ? (
                                 <img
                                     src={getProfileImageUrl(user.profileImage)}
                                     alt="프로필"
                                     className="w-full h-full object-cover"
-                                    onError={() => setImgError(true)} // 에러 나면 imgError를 true로 변경
+                                    onError={() => setImgError(true)}
                                 />
                             ) : (
-                                // 이미지가 없거나 에러가 났으면 기본 아이콘 표시
                                 <span className="text-4xl">👤</span>
                             )}
                         </div>
-                        {/* ▲▲▲ [수정됨 끝] ▲▲▲ */}
 
                         <div>
                             <h2 className="text-xl font-bold text-gray-900">{user.name}</h2>
@@ -208,23 +246,71 @@ export default function MyPage() {
                 </div>
 
                 {/* 활동 통계 */}
-                <div className="px-5 pb-6">
-                    <div className="flex bg-white rounded-2xl shadow-sm border border-gray-100 divide-x divide-gray-100">
-                        {/* value에 user.stats.point 가 들어가면서 개수가 표시됨 */}
-                        <StatItem label="게시글/리뷰" value={user.stats.point} />
-                        <StatItem label="좋아요" value={user.stats.like} />
+                <div className="flex gap-4 justify-center pb-4">
+                    <motion.div whileTap={{ scale: 0.97 }} className="w-52 bg-white border border-gray-200 rounded-2xl p-5 shadow hover:shadow-md transition-shadow flex items-center justify-between">
+                        <div className="flex flex-col">
+                            <span className="text-gray-400 text-xs font-medium mb-1 uppercase tracking-wide">게시글/리뷰</span>
+                            <span className="text-2xl font-extrabold text-gray-900">{user.stats.point}</span>
+                        </div>
+                        <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center text-gray-600">
+                            <FileText size={22} strokeWidth={1.5} />
+                        </div>
+                    </motion.div>
+
+                    <motion.div whileTap={{ scale: 0.97 }} className="w-52 bg-white border border-gray-200 rounded-2xl p-5 shadow hover:shadow-md transition-shadow flex items-center justify-between">
+                        <div className="flex flex-col">
+                            <span className="text-gray-400 text-xs font-medium mb-1 uppercase tracking-wide">좋아요</span>
+                            <span className="text-2xl font-extrabold text-gray-900">{user.stats.like}</span>
+                        </div>
+                        <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center text-gray-600">
+                            <Heart size={22} strokeWidth={1.5} />
+                        </div>
+                    </motion.div>
+                </div>
+                <div className="h-2 bg-gray-100 mb-8"></div>
+
+                {/* [수정됨] 게시글/리뷰 섹션 */}
+                <div className="px-5 mb-4">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-bold text-gray-900">내 활동 내역</h3>
+                    </div>
+
+                    {/* 탭 버튼 */}
+                    <div className="flex gap-2 mb-4">
+                        {['ALL', 'POST', 'REVIEW'].map((tab) => (
+                            <button
+                                key={tab}
+                                onClick={() => setActiveTab(tab)}
+                                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all ${
+                                    activeTab === tab
+                                        ? "bg-gray-900 text-white shadow-md"
+                                        : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                                }`}
+                            >
+                                {tab === 'ALL' ? '전체' : tab === 'POST' ? '게시글' : '리뷰'}
+                            </button>
+                        ))}
                     </div>
                 </div>
 
-                {/* 구분선 */}
-                <div className="h-2 bg-gray-100 mb-6"></div>
-
-                {/* 게시글/리뷰 섹션 */}
-                <div className="px-5 flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold text-gray-900"> 게시글/리뷰</h3>
-                </div>
-                <div className="px-5 mb-8 min-h-[50px] flex items-center justify-center text-gray-400 text-sm">
-                    (작성된 게시글/리뷰가 없습니다)
+                {/* 게시글 리스트 영역 */}
+                <div className="px-5 mb-8 min-h-[100px]">
+                    <AnimatePresence mode="popLayout">
+                        {filteredPosts.length > 0 ? (
+                            filteredPosts.map((post) => (
+                                <PostCard key={post.id} post={post} />
+                            ))
+                        ) : (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="flex flex-col items-center justify-center py-10 text-gray-400"
+                            >
+                                <FileText size={40} strokeWidth={1} className="mb-2 opacity-50"/>
+                                <span className="text-sm">작성된 내역이 없습니다.</span>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
 
                 <div className="h-2 bg-gray-100 mb-6"></div>
@@ -247,7 +333,7 @@ export default function MyPage() {
 
             </div>
 
-            {/* 모달들 (생략 없음) */}
+            {/* 모달들 (기존과 동일) */}
             {showLogoutModal && (
                 <Modal title="로그아웃 하시겠습니까?" onCancel={() => setShowLogoutModal(false)} onConfirm={handleLogout} />
             )}
