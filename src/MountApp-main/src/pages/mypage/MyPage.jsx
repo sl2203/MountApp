@@ -134,7 +134,6 @@ export default function MapPage() {
                 <div className="px-5 pb-6">
                     <div className="flex bg-white rounded-2xl shadow-sm border border-gray-100 divide-x divide-gray-100">
                         <StatItem label="게시글/리뷰" value={user.stats.point} />
-                        <StatItem label="등산 일정" value={user.stats.schedule} />
                         <StatItem label="좋아요" value={user.stats.like} />
                     </div>
                 </div>

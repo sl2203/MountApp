@@ -19,6 +19,7 @@ export default function LoginPage() {
             const response = await axios.post("/api/auth/login", {
                 userid: userid,
                 password: password,
+                withCredentials: true, // 쿠키/세션 인증을 사용할 경우 필요
             });
 
             if (response.status === 200) {

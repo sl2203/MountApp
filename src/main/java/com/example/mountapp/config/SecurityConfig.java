@@ -8,9 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.http.SessionCreationPolicy; // 추가됨
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint; // 추가됨
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -24,37 +24,38 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter JwtAuthenticationFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                // 1. CSRF 비활성화 (JWT 사용 시 필수)
                 .csrf(AbstractHttpConfigurer::disable)
+
+                // 2. CORS 설정 적용
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+                // 3. 세션 관리 정책 설정 (Stateless) - [수정됨: 필수]
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+
+                // 4. 요청 권한 설정
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/images/**").permitAll()
                         .requestMatchers("/api/auth/**", "/api/mountains/**").permitAll()
-
-                        // GET 요청 허용
-                        .requestMatchers(HttpMethod.GET, "/api/posts/**").authenticated()
-
-                        // 게시글 작성, 삭제 권한
                         .requestMatchers(HttpMethod.POST, "/api/posts").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/posts/**").authenticated()
-
-                        // [수정] 여기가 원인이었습니다! (** -> *)
-                        // 중간에 **를 쓰면 뒤에 글자를 못 붙입니다. 게시글 ID는 숫자 하나니까 *로 바꿉니다.
-                        .requestMatchers(HttpMethod.POST, "/api/posts/*/comments").authenticated()
-
                         .anyRequest().authenticated()
                 )
+
+                // 5. 예외 처리 설정 (API 응답을 위해) - [수정됨: 권장]
                 .exceptionHandling(exception -> exception
+                        // 인증되지 않은 요청에 대해 401 Unauthorized 반환 (로그인 페이지 리다이렉트 방지)
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 )
-                .addFilterBefore(JwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+                // 6. 필터 순서 설정
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

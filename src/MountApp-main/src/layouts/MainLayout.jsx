@@ -8,7 +8,7 @@ function MainLayout() {
   return (
     <div className="w-full flex justify-center bg-gray-100">
       {/* 450px 고정 페이지 */}
-      <div className="w-[450px] min-h-screen pb-16 bg-white relative">
+      <div className="w-[450px] min-h-screen  bg-white relative">
         <Outlet />
 
         {/* 하단바 */}

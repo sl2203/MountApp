@@ -12,31 +12,32 @@ import JoinPage from "./pages/auth/JoinPage";
 import NewPost from "./pages/community/NewPost";
 import Profile from "./pages/mypage/Profile";
 import ProfileChange from "./pages/mypage/ProfileChange";
-import MountainDetail from "./pages/home/MountainDetail.jsx";
-
+import AdminMode from "./components/AdminMode";
 
 function App() {
-  return (
-    <Routes>
-      <Route path="/join" element={<JoinPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/find" element={<FindAccountPage />} />
-      <Route element={<MainLayout />}>
-        <Route path="/" element={<Home />} />
-          <Route path="/mountain/:id" element={<MountainDetail />} />
-        <Route path="/map" element={<Map />} />
-        <Route path="/community" element={<Community />} />
-        <Route path="/community/new-post" element={<NewPost type="post"   />} />
-        <Route path="/community/new-review" element={<NewPost type="review" />} />
-        <Route path="/community/post/:id" element={<DetailPage dataType="post" />} />
-        <Route path="/community/review/:id" element={<DetailPage dataType="review" />} />
-        <Route path="/mypage" element={<MyPage />} />
-        <Route path="/mypage/detail" element={<Profile />} />
-        <Route path="/mypage/change" element={<ProfileChange />} />
-        <Route path="/community/DetailPage/:id" element={<DetailPage />} />
-      </Route>
-    </Routes>
-  );
+    return (
+        <AdminMode>
+            <Routes>
+                <Route path="/join" element={<JoinPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/find" element={<FindAccountPage />} />
+                <Route path="/mypage/detail" element={<Profile />} />
+                <Route path="/mypage/change" element={<ProfileChange />} />
+                <Route element={<MainLayout />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/mountain/:name" element={<Mountain />} />
+                    <Route path="/map" element={<Map />} />
+                    <Route path="/community" element={<Community />} />
+                    <Route path="/community/new-post" element={<NewPost type="post"   />} />
+                    <Route path="/community/new-review" element={<NewPost type="review" />} />
+                    <Route path="/community/post/:id" element={<DetailPage dataType="post" />} />
+                    <Route path="/community/review/:id" element={<DetailPage dataType="review" />} />
+                    <Route path="/mypage" element={<MyPage />} />
+                    <Route path="/community/DetailPage/:id" element={<DetailPage />} />
+                </Route>
+            </Routes>
+        </AdminMode>
+    );
 }
 
 export default App;
