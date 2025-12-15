@@ -18,13 +18,13 @@
         private String postdate;
         private int likeCount; // 총 좋아요 수
         private boolean liked;
-
+        private String profileImage;
 
         public PostResponseDTO(Post_Review entity) {
             this.id = entity.getPostid();
             this.title = entity.getTitle();
             this.comment = entity.getPostcontents();
-
+            this.profileImage = entity.getUser().getProfileImage();
             if (entity.getUser() != null) {
                 this.author = entity.getUser().getNickname();
                 this.nickname = entity.getUser().getNickname();

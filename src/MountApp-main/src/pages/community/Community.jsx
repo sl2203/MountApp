@@ -1,8 +1,36 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Star, StarHalf, PenLine, Camera,CameraOff, Megaphone,ThumbsUp} from "lucide-react";
+import { Star, StarHalf, PenLine, Camera, CameraOff, Megaphone, ThumbsUp, User } from "lucide-react"; // User 추가
 import axios from "axios";
+
+// ▼▼▼ [추가] 프로필 이미지 전용 컴포넌트 ▼▼▼
+const ProfileAvatar = ({ imagePath, nickname, size = "w-6 h-6" }) => {
+    const [imgError, setImgError] = useState(false);
+    const BACKEND_URL = "http://localhost:8082";
+
+    const getProfileImageUrl = (path) => {
+        if (!path) return null;
+        if (path.startsWith("http")) return path;
+        return `${BACKEND_URL}${path}`;
+    };
+
+    return (
+        <div className={`${size} rounded-full bg-gray-200 overflow-hidden border border-gray-200 flex-shrink-0 flex items-center justify-center`}>
+            {imagePath && !imgError ? (
+                <img
+                    src={getProfileImageUrl(imagePath)}
+                    alt={nickname}
+                    className="w-full h-full object-cover"
+                    onError={() => setImgError(true)}
+                />
+            ) : (
+                <User className="text-gray-400 w-3/5 h-3/5" />
+            )}
+        </div>
+    );
+};
+// ▲▲▲ [추가 끝] ▲▲▲
 
 export default function Community() {
     const navigate = useNavigate();
@@ -12,8 +40,9 @@ export default function Community() {
     const [selectedCategory, setSelectedCategory] = useState("전체");
     const categories = ["전체", "산", "등산용품", "맛집", "숙소"];
     const alertShown = useRef(false);
-    const reviewsContainerRef = useRef(null); // 리뷰 스크롤 컨테이너 ref
+    const reviewsContainerRef = useRef(null);
 
+    // 게시글/리뷰 썸네일용 이미지 처리
     const getImageUrl = (path) => {
         if (!path) return "";
         const filename = path.replace(/^.*[\\\/]/, '');
@@ -62,7 +91,6 @@ export default function Community() {
         ? reviews
         : reviews.filter(review => review.category === selectedCategory);
 
-    // 카테고리 변경 시 리뷰 스크롤 왼쪽 끝으로 이동
     useEffect(() => {
         if (reviewsContainerRef.current) {
             reviewsContainerRef.current.scrollTo({ left: 0, behavior: "smooth" });
@@ -71,13 +99,10 @@ export default function Community() {
 
     return (
         <motion.section className="flex flex-col h-screen bg-gray-50">
-
-            {/* 헤더: 커뮤니티 제목 */}
             <motion.header className="flex flex-col items-center px-5 py-4 bg-white shadow-sm z-10">
                 <h2 className="text-2xl font-bold">커뮤니티</h2>
             </motion.header>
 
-            {/* 게시글 + 리뷰 섹션 */}
             <motion.section className="flex-1 flex flex-col overflow-y-auto space-y-6 p-4 pb-20">
 
                 {/* 게시글 섹션 */}
@@ -87,9 +112,7 @@ export default function Community() {
                             <span className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md text-white">
                                 <Megaphone className="w-5 h-5" />
                             </span>
-                            <span className="text-2xl font-bold text-gray-900">
-                                게시글
-                            </span>
+                            <span className="text-2xl font-bold text-gray-900">게시글</span>
                         </h3>
                         <motion.button
                             whileTap={{ scale: 0.95 }}
@@ -130,9 +153,14 @@ export default function Community() {
 
                                         <div className="p-3 flex flex-col gap-1.5">
                                             <div className="flex items-center gap-2">
-                                                <div className="w-6 h-6 rounded-full bg-gray-100 border flex items-center justify-center text-[10px] font-bold text-gray-500">
-                                                    {post.nickname ? post.nickname.substring(0,2) : "??"}
-                                                </div>
+                                                {/* ▼▼▼ [수정됨] 게시글 작성자 프로필 ▼▼▼ */}
+                                                <ProfileAvatar
+                                                    imagePath={post.profileImage} // DTO에 profileImage 필드가 있어야 함
+                                                    nickname={post.nickname}
+                                                    size="w-6 h-6"
+                                                />
+                                                {/* ▲▲▲ [수정됨] ▲▲▲ */}
+
                                                 <span className="font-medium text-xs text-gray-600 truncate">{post.nickname || "익명"}</span>
                                             </div>
                                             <h4 className="font-bold text-sm text-gray-900 truncate">{post.title}</h4>
@@ -153,13 +181,10 @@ export default function Community() {
                 <motion.section className="overflow-x-auto mt-2">
                     <div className="flex justify-between items-center mb-2 px-1">
                         <h3 className="flex items-center gap-3 mb-4">
-                            {/* 변경됨: Green ~ Emerald 그라디언트 */}
                             <span className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-md text-white">
                                 <ThumbsUp className="w-5 h-5" />
                             </span>
-                            <span className="text-2xl font-bold text-gray-900">
-                                리뷰
-                            </span>
+                            <span className="text-2xl font-bold text-gray-900">리뷰</span>
                         </h3>
                         <motion.button
                             whileTap={{ scale: 0.95 }}
@@ -187,7 +212,6 @@ export default function Community() {
                         ))}
                     </div>
 
-                    {/* 리뷰 카드 컨테이너에 ref 연결 */}
                     <motion.div className="flex gap-3 pb-4 px-1 overflow-x-auto snap-x" ref={reviewsContainerRef}>
                         {filteredReviews.length > 0 ? (
                             filteredReviews.map((review, index) => {
@@ -219,9 +243,14 @@ export default function Community() {
 
                                         <div className="p-3 flex flex-col gap-1.5">
                                             <div className="flex items-center gap-2">
-                                                <div className="w-6 h-6 rounded-full bg-gray-100 border flex items-center justify-center text-[10px] font-bold text-gray-500">
-                                                    {review.nickname ? review.nickname.substring(0,2) : "??"}
-                                                </div>
+                                                {/* ▼▼▼ [수정됨] 리뷰 작성자 프로필 ▼▼▼ */}
+                                                <ProfileAvatar
+                                                    imagePath={review.profileImage}
+                                                    nickname={review.nickname}
+                                                    size="w-6 h-6"
+                                                />
+                                                {/* ▲▲▲ [수정됨] ▲▲▲ */}
+
                                                 <span className="font-medium text-xs text-gray-600 truncate">{review.nickname || "익명"}</span>
                                             </div>
 

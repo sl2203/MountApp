@@ -18,32 +18,29 @@ import java.util.stream.Collectors;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository; // [추가] 유저를 찾아야 함
+    private final UserRepository userRepository;
 
-    // 조회는 수정할 필요 없음 (JPA가 알아서 닉네임 가져옴)
     @Transactional(readOnly = true)
     public List<CommentDTO> getCommentsByPostId(Long postId) {
-        List<Comments> comments = commentRepository.findByPostIdOrderByCommentIdDesc(postId);
+        // ▼▼▼ [수정] 성능 최적화를 위해 Fetch Join 쿼리 사용 ▼▼▼
+        // 기존: findByPostIdOrderByCommentIdDesc(postId)
+        List<Comments> comments = commentRepository.findByPostIdWithUser(postId);
+
         return comments.stream()
                 .map(CommentDTO::fromEntity)
                 .collect(Collectors.toList());
     }
 
-    // 작성
+    // createComment 등 나머지 코드는 그대로 유지...
     @Transactional
     public void createComment(Long postId, CommentDTO dto) {
-        // 1. DTO에 있는 userId(String)로 진짜 유저 객체를 찾음
         User user = userRepository.findByUserid(dto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
 
         Comments comments = new Comments();
         comments.setPostId(postId);
         comments.setCommentContents(dto.getCommentContents());
-
-        String nowDate = LocalDate.now().toString();
-        comments.setCommentDate(nowDate);// 필수 컬럼
-
-        // [수정] String ID 대신 User 객체 자체를 저장
+        comments.setCommentDate(LocalDate.now().toString());
         comments.setUser(user);
 
         commentRepository.save(comments);

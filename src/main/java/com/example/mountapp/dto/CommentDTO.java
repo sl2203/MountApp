@@ -15,22 +15,24 @@ public class CommentDTO {
     private String commentContents;
     private String commentDate;
     private Long postId;
-    private String userId; // ID도 필요하다면 유지
-
-    // [추가] 화면에 보여줄 닉네임 필드
+    private String userId;
     private String nickname;
 
-    // Entity -> DTO 변환 메서드
+    // ▼▼▼ [추가] 프로필 이미지 필드 ▼▼▼
+    private String profileImage;
+
     public static CommentDTO fromEntity(Comments comments) {
         return CommentDTO.builder()
                 .commentId(comments.getCommentId())
                 .commentContents(comments.getCommentContents())
                 .commentDate(comments.getCommentDate())
                 .postId(comments.getPostId())
-
-                // [핵심] comments.getUser()로 유저 객체에 접근해서 닉네임을 꺼냄
                 .userId(comments.getUser().getUserid())
                 .nickname(comments.getUser().getNickname())
+
+                // ▼▼▼ [추가] User 엔티티에서 이미지 경로 꺼내오기 ▼▼▼
+                // User 엔티티에 getProfileImage() 메서드가 있어야 함
+                .profileImage(comments.getUser().getProfileImage())
                 .build();
     }
 }
