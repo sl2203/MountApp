@@ -3,10 +3,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import BackButton from "../../layouts/BackButton";
 import { Star, StarHalf } from "lucide-react";
-import axios from "axios"; // ★ Axios import 확인!
+import axios from "axios";
 
 const categories = ["산", "등산용품", "맛집", "숙소"];
 
+// 별점 컴포넌트
 function StarRating({ rating, setRating }) {
     const handleClick = (e, star) => {
         const { left, width } = e.currentTarget.getBoundingClientRect();
@@ -55,26 +56,23 @@ export default function NewPost({ type = "post" }) {
 
     const [title, setTitle] = useState(isEdit ? postData.title : "");
     const [content, setContent] = useState(isEdit ? postData.comment : "");
-
-    // 실제 업로드할 파일 객체를 담는 State
     const [images, setImages] = useState([]);
-    // 화면에 보여줄 미리보기 URL을 담는 State
     const [previewImages, setPreviewImages] = useState(
         isEdit && postData.image ? [postData.image] : []
     );
-
-    const [password, setPassword] = useState("");
     const [rating, setRating] = useState(
         isEdit && postData.rating ? postData.rating : 0
     );
     const [category, setCategory] = useState(
         isEdit && postData.category ? postData.category : categories[0]
     );
+    const [searchKeyword, setSearchKeyword] = useState(
+        isEdit && postData.searchKeyword ? postData.searchKeyword : ""
+    );
     const [showModal, setShowModal] = useState(false);
 
-    // ★ 서버 전송 핸들러
+    // 서버 전송 핸들러
     const handleSubmit = async () => {
-        // 1. 토큰 확인
         const token = localStorage.getItem("jwtToken");
         if (!token) {
             alert("로그인이 필요합니다.");
@@ -82,60 +80,54 @@ export default function NewPost({ type = "post" }) {
             return;
         }
 
-        // 2. FormData 생성
+        if (postType === "review" && rating === 0) {
+            alert("별점을 입력해주세요!");
+            return;
+        }
+        if (postType === "review" && category === "산" && !searchKeyword.includes("산")) {
+            alert("산 이름을 입력해주세요!");
+            return;
+        }
         const formData = new FormData();
 
-        // 3. JSON 데이터 포장
-        // 백엔드 PostRequestDTO와 필드명을 맞춰야 함
         const postDto = {
             title: title,
             content: content,
             rating: postType === "review" ? rating : 0,
-            category: postType === "review" ? category : "자유게시판"
+            category: postType === "review" ? category : "자유게시판",
+            searchKeyword: category === "산" ? searchKeyword : null
         };
 
-        // JSON을 Blob으로 변환하여 "data" 키에 추가
-        // type: application/json 필수
         const jsonBlob = new Blob([JSON.stringify(postDto)], { type: "application/json" });
         formData.append("data", jsonBlob);
 
-        // 4. 이미지 파일들 추가 ("files" 키)
         images.forEach((file) => {
             formData.append("files", file);
         });
 
         try {
-            // 5. POST 요청 전송
             await axios.post("http://localhost:8082/api/posts", formData, {
                 headers: {
-                    "Content-Type": "multipart/form-data", // 중요
+                    "Content-Type": "multipart/form-data",
                     Authorization: `Bearer ${token}`
                 }
             });
-
-            // 성공 시 모달 오픈
             setShowModal(true);
-
         } catch (error) {
             console.error("업로드 에러:", error);
             alert("게시글 등록에 실패했습니다.");
         }
     };
 
-    // 이미지 선택 핸들러
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
         if (files.length > 0) {
-            // 전송용 파일 State 저장
             setImages((prev) => [...prev, ...files]);
-
-            // 미리보기용 URL 생성
             const newPreviews = files.map((file) => URL.createObjectURL(file));
             setPreviewImages((prev) => [...prev, ...newPreviews]);
         }
     };
 
-    // 이미지 삭제 핸들러
     const handleRemoveImage = (index) => {
         setImages((prev) => prev.filter((_, i) => i !== index));
         setPreviewImages((prev) => prev.filter((_, i) => i !== index));
@@ -161,22 +153,39 @@ export default function NewPost({ type = "post" }) {
                 </h2>
             </div>
 
+            {/* 리뷰일 때 카테고리 + 검색창 */}
             {postType === "review" && (
-                <div className="flex gap-2 mb-4 justify-center sm:justify-start">
-                    {categories.map((cat) => (
-                        <button
-                            key={cat}
-                            className={`px-4 py-2 rounded-full border transition-colors
-                ${category === cat ? "bg-blue-500 text-white" : "bg-white text-gray-700 border-gray-300"}
-                hover:bg-blue-400 hover:text-white`}
-                            onClick={() => setCategory(cat)}
-                        >
-                            {cat}
-                        </button>
-                    ))}
+                <div className="flex flex-col gap-2 mb-4">
+                    <div className="flex gap-2 justify-center sm:justify-start">
+                        {categories.map((cat) => (
+                            <button
+                                key={cat}
+                                className={`px-4 py-2 rounded-full border transition-colors
+                                    ${category === cat ? "bg-blue-500 text-white" : "bg-white text-gray-700 border-gray-300"}
+                                    hover:bg-blue-400 hover:text-white`}
+                                onClick={() => {
+                                    setCategory(cat);
+                                    setSearchKeyword(""); // 산을 선택해도 자동 입력 없음
+                                }}
+                            >
+                                {cat}
+                            </button>
+                        ))}
+                    </div>
+
+                    {category === "산" && (
+                        <input
+                            type="text"
+                            placeholder="산 이름을 입력하세요"
+                            className="border rounded-lg p-2 w-40 outline-none text-sm"
+                            value={searchKeyword}
+                            onChange={(e) => setSearchKeyword(e.target.value)}
+                        />
+                    )}
                 </div>
             )}
 
+            {/* 제목 */}
             <div className="border rounded-lg bg-white p-3 mb-4">
                 <input
                     type="text"
@@ -187,17 +196,20 @@ export default function NewPost({ type = "post" }) {
                 />
             </div>
 
+            {/* 내용 */}
             <div className="h-[500px] border rounded-lg bg-white p-3 mb-4">
-        <textarea
-            className="w-full h-full resize-none outline-none"
-            placeholder="내용을 입력하세요"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-        />
+                <textarea
+                    className="w-full h-full resize-none outline-none"
+                    placeholder="내용을 입력하세요"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                />
             </div>
 
+            {/* 별점 */}
             {postType === "review" && <StarRating rating={rating} setRating={setRating} />}
 
+            {/* 이미지 추가 + 완료 버튼 */}
             <div className="mb-2 flex items-center justify-between">
                 <label className="px-4 py-2 rounded-lg bg-blue-100 text-blue-700 text-sm font-semibold hover:bg-blue-200 cursor-pointer transition-colors">
                     이미지 추가
@@ -211,7 +223,7 @@ export default function NewPost({ type = "post" }) {
                 </label>
                 <button
                     className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                    onClick={handleSubmit} // 여기 연결됨
+                    onClick={handleSubmit}
                 >
                     완료
                 </button>
@@ -241,12 +253,7 @@ export default function NewPost({ type = "post" }) {
                 </div>
             )}
 
-            {isEdit && (
-                <div className="mt-4 flex gap-3">
-                    {/* 비밀번호 로직 생략 */}
-                </div>
-            )}
-
+            {/* 성공 모달 */}
             {showModal && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50">
                     <div className="bg-white rounded-2xl shadow-xl w-80 p-6 text-center">
