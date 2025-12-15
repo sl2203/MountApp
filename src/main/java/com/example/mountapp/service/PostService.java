@@ -129,4 +129,8 @@ public class PostService {
 
         postRepository.save(post);
     }
+    @Transactional(readOnly = true)
+    public long getMyPostCount(String userid) {
+        return postRepository.countByUser_Userid(userid);
+    }
 }

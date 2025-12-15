@@ -13,4 +13,6 @@ public interface LikesRepository extends JpaRepository<Likes, Long> {
 
     // 유저가 해당 글에 좋아요 눌렀는지 여부 (true/false)
     int countByUseridAndPostid(Long userid, Long postid);
+
+    long countByUserid(Long userid);
 }

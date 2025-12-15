@@ -43,6 +43,9 @@ public class SecurityConfig {
                 // 4. 요청 권한 설정
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/images/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/auth/me").authenticated() // 수정 요청은 로그인 필수
+                        .requestMatchers(HttpMethod.GET, "/api/auth/me").authenticated() // 조회 요청도 로그인 필수
+                        .requestMatchers("/api/auth/withdraw").authenticated()
                         .requestMatchers("/api/auth/**", "/api/mountains/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/posts").authenticated()
                         .anyRequest().authenticated()

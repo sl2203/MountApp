@@ -104,4 +104,37 @@ public class LikesController {
 
         return ResponseEntity.ok(status);
     }
+    @GetMapping("/my/count")
+    public ResponseEntity<Long> getMyLikeCount(@AuthenticationPrincipal Object principal) {
+
+        // 1. 비로그인 처리
+        if (principal == null) {
+            return ResponseEntity.ok(0L);
+        }
+
+        try {
+            // 2. 로그인 유저 정보 추출 (Security Context)
+            String useridStr;
+            if (principal instanceof UserDetails) {
+                useridStr = ((UserDetails) principal).getUsername();
+            } else if (principal instanceof String) {
+                useridStr = (String) principal;
+            } else {
+                return ResponseEntity.ok(0L);
+            }
+
+            // 3. String 아이디로 실제 DB의 User 엔티티 조회 (PK인 Long id가 필요함)
+            User user = userRepository.findByUserid(useridStr)
+                    .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+
+            // 4. Repository 호출 (내 PK로 카운트 조회)
+            long myLikeCount = likesRepository.countByUserid(user.getId());
+
+            return ResponseEntity.ok(myLikeCount);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.ok(0L); // 에러 시 0 반환
+        }
+    }
 }

@@ -88,4 +88,21 @@ public class PostController {
             return ResponseEntity.badRequest().body("등록 실패: " + e.getMessage());
         }
     }
+    @GetMapping("/posts/my/count")
+    public ResponseEntity<Long> getMyPostCount(@AuthenticationPrincipal Object principal) {
+        String userid;
+
+        // 로그인 정보 추출 로직 (기존 코드와 동일하게 유지)
+        if (principal instanceof UserDetails) {
+            userid = ((UserDetails) principal).getUsername();
+        } else if (principal instanceof String) {
+            userid = (String) principal;
+        } else {
+            // 로그인하지 않은 경우 0 반환 혹은 401 에러
+            return ResponseEntity.ok(0L);
+        }
+
+        long count = postService.getMyPostCount(userid);
+        return ResponseEntity.ok(count);
+    }
 }

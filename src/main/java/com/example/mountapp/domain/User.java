@@ -47,5 +47,7 @@ public class User {
     @Column(name = "NICKNAME")
     private String nickname;
 
+    @Column(name = "PROFILE_IMAGE")
+    private String profileImage;
 
 }
