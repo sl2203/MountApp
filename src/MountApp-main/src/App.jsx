@@ -12,7 +12,7 @@ import JoinPage from "./pages/auth/JoinPage";
 import NewPost from "./pages/community/NewPost";
 import Profile from "./pages/mypage/Profile";
 import ProfileChange from "./pages/mypage/ProfileChange";
-import AdminMode from "./components/AdminMode";
+import AdminMode from "./components/AdminMode.jsx";
 
 function App() {
     return (
