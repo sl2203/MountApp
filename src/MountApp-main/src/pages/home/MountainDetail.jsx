@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { motion, AnimatePresence } from "framer-motion"; // 슬라이더 애니메이션용 추가
-import { Plus, MapPin, ArrowLeft, ChevronLeft, ChevronRight, Mountain as MountainIcon } from "lucide-react"; // 아이콘 추가
+import { motion, AnimatePresence } from "framer-motion";
+// [변경] Clock, Flag 아이콘 추가
+import { Plus, MapPin, ArrowLeft, ChevronLeft, ChevronRight, Mountain as MountainIcon, Clock, Flag } from "lucide-react";
 
 import MountainWeather from "./MountainWeather";
 
@@ -14,7 +15,6 @@ export default function MountainDetail() {
     const [loading, setLoading] = useState(true);
     const [tab, setTab] = useState("home");
 
-    // 슬라이더용 상태 (현재 몇 번째 사진인지)
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     useEffect(() => {
@@ -32,17 +32,14 @@ export default function MountainDetail() {
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-gray-100">로딩 중...</div>;
     if (!mountain) return <div className="min-h-screen flex items-center justify-center bg-gray-100">산 정보를 찾을 수 없습니다.</div>;
 
-    // 1. 쉼표(,)로 이어진 이미지 주소를 잘라서 배열로 만듦
     const images = mountain.imageUrl
         ? mountain.imageUrl.split(",")
         : ["https://via.placeholder.com/400x300"];
 
-    // 다음 사진 보기
     const nextImage = () => {
         setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
     };
 
-    // 이전 사진 보기
     const prevImage = () => {
         setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
     };
@@ -62,11 +59,11 @@ export default function MountainDetail() {
                     <h2 className="text-2xl font-bold">{mountain.name}</h2>
                 </motion.header>
 
-                {/* 📸 [기능 1] 이미지 슬라이더 섹션 */}
+                {/* 이미지 슬라이더 */}
                 <div className="relative w-full h-64 bg-gray-100 overflow-hidden">
                     <AnimatePresence mode="wait">
                         <motion.img
-                            key={currentImageIndex} // 키가 바뀌면 애니메이션 다시 실행
+                            key={currentImageIndex}
                             src={images[currentImageIndex]}
                             alt={`slide-${currentImageIndex}`}
                             className="w-full h-full object-cover absolute top-0 left-0"
@@ -78,29 +75,17 @@ export default function MountainDetail() {
                         />
                     </AnimatePresence>
 
-                    {/* 좌우 화살표 버튼 (사진이 2장 이상일 때만 보임) */}
                     {images.length > 1 && (
                         <>
-                            <button
-                                onClick={prevImage}
-                                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 text-white p-1 rounded-full hover:bg-black/50 transition"
-                            >
+                            <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 text-white p-1 rounded-full hover:bg-black/50 transition">
                                 <ChevronLeft size={24} />
                             </button>
-                            <button
-                                onClick={nextImage}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 text-white p-1 rounded-full hover:bg-black/50 transition"
-                            >
+                            <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 text-white p-1 rounded-full hover:bg-black/50 transition">
                                 <ChevronRight size={24} />
                             </button>
-
-                            {/* 하단 점(Indicator) */}
                             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
                                 {images.map((_, idx) => (
-                                    <div
-                                        key={idx}
-                                        className={`w-2 h-2 rounded-full transition-all ${idx === currentImageIndex ? 'bg-white scale-125' : 'bg-white/50'}`}
-                                    />
+                                    <div key={idx} className={`w-2 h-2 rounded-full transition-all ${idx === currentImageIndex ? 'bg-white scale-125' : 'bg-white/50'}`} />
                                 ))}
                             </div>
                         </>
@@ -123,11 +108,11 @@ export default function MountainDetail() {
                 </div>
 
                 {/* 탭 내용 */}
-                <motion.div key={tab} className="mt-3 px-4 pb-10">
+                <motion.div key={tab} className="mt-0 pb-10"> {/* 패딩 제거 (배경색 적용을 위해) */}
 
                     {/* 홈 탭 */}
                     {tab === "home" && (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="px-4 mt-3">
                             <div className="border border-gray-300 h-40 grid grid-rows-2 grid-cols-2 rounded-lg bg-white">
                                 <div className="flex flex-col items-center justify-center border-b border-r border-gray-200">
                                     <span className="text-sm text-gray-500 mb-1">🏔️ 높이</span>
@@ -137,7 +122,6 @@ export default function MountainDetail() {
                                     <span className="text-sm text-gray-500 mb-1">📍 위치</span>
                                     <span className="font-bold text-sm text-center px-1">{mountain.location}</span>
                                 </div>
-                                {/* 난이도 표시 (DB에 추가했으므로 표시 가능) */}
                                 {mountain.difficulty && (
                                     <div className="col-span-2 flex items-center justify-center py-2 bg-gray-50 border-b border-gray-200 text-sm">
                                         <span className="font-bold text-gray-600 mr-2">난이도:</span>
@@ -154,46 +138,100 @@ export default function MountainDetail() {
                         </motion.div>
                     )}
 
-                    {/* [기능 2] 코스 정보 탭 */}
+                    {/* [기능 2] 코스 정보 탭 (카드 UI 적용) */}
                     {tab === "course" && (
-                        <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-                            <h4 className="font-bold text-lg mb-3 flex items-center gap-2">
-                                <MapPin className="w-5 h-5 text-blue-500" /> 추천 코스
-                            </h4>
-                            <div className="text-gray-700 text-sm leading-relaxed">
+                        <motion.div
+                            className="px-4 py-4 bg-gray-50 min-h-[400px]" // 배경색 추가
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                        >
+                            <div className="space-y-4">
                                 {mountain.trails ? (
-                                    // 1. \n (글자) 또는 실제 줄바꿈 문자를 기준으로 자릅니다.
-                                    mountain.trails.split(/\\n|\n/).map((line, index) => (
-                                        <p key={index} className="mb-2">
-                                            {/* 2. 잘린 문장들을 각각의 p 태그로 감싸서 보여줍니다. */}
-                                            {line}
-                                        </p>
-                                    ))
+                                    mountain.trails.split(/\\n|\n/).map((line, index) => {
+                                        if (!line.trim()) return null;
+
+                                        // UI를 위한 임시 데이터 생성 (DB 업데이트 전까지 사용)
+                                        const isPopular = index === 0; // 첫 번째 코스만 인기
+                                        const difficulty = index % 2 === 0 ? "보통" : "어려움";
+                                        const time = index === 0 ? "4시간 30분" : "3시간";
+                                        const distance = index === 0 ? "9.6km" : "5.8km";
+
+                                        return (
+                                            <div key={index} className="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
+                                                {/* 상단: 코스 이름 + 깃발 */}
+                                                <div className="flex items-start justify-between mb-2">
+                                                    <h4 className="font-bold text-lg text-gray-800 flex items-center gap-1">
+                                                        {line.length > 20 ? `${mountain.name} ${index + 1}코스` : line}
+                                                        <Flag className="w-4 h-4 text-gray-400 ml-1 fill-gray-100" />
+                                                    </h4>
+                                                </div>
+
+                                                {/* 설명 (긴 줄글일 경우 자르기) */}
+                                                <p className="text-gray-500 text-sm mb-4 line-clamp-2">
+                                                    {line}
+                                                </p>
+
+                                                {/* 태그 (인기, 난이도) */}
+                                                <div className="flex gap-2 mb-6">
+                                                    {isPopular && (
+                                                        <span className="px-2 py-1 bg-blue-50 text-blue-600 text-xs font-bold rounded-md">
+                                                            인기
+                                                        </span>
+                                                    )}
+                                                    <span className={`px-2 py-1 text-xs font-bold rounded-md ${
+                                                        difficulty === "보통" ? "bg-gray-100 text-gray-600" : "bg-red-50 text-red-600"
+                                                    }`}>
+                                                        {difficulty}
+                                                    </span>
+                                                </div>
+
+                                                {/* 하단: 시간 및 거리 */}
+                                                <div className="flex justify-end items-center gap-4 text-sm text-gray-500 font-medium">
+                                                    <div className="flex items-center gap-1">
+                                                        <Clock className="w-4 h-4 text-gray-400" />
+                                                        <span>{time}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                        <MapPin className="w-4 h-4 text-gray-400" />
+                                                        <span>{distance}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })
                                 ) : (
-                                    "등록된 코스 정보가 없습니다."
+                                    <div className="text-center py-10 text-gray-400 bg-white rounded-2xl shadow-sm">
+                                        <MapPin className="w-10 h-10 mx-auto mb-2 opacity-20" />
+                                        <p>등록된 코스 정보가 없습니다.</p>
+                                    </div>
                                 )}
                             </div>
-                        </div>
+                        </motion.div>
                     )}
 
                     {/* 날씨 정보 */}
-                    {tab === "weather" && <MountainWeather mountain={mountain} />}
+                    {tab === "weather" && (
+                        <div className="px-4 mt-3">
+                            <MountainWeather mountain={mountain} />
+                        </div>
+                    )}
 
                     {/* [기능 3] 유의사항 탭 */}
                     {tab === "notice" && (
-                        <motion.footer className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg text-sm text-gray-700 shadow-sm">
-                            <h4 className="font-bold text-yellow-800 mb-2">⚠️ 안전 산행 유의사항</h4>
-                            <ul className="list-disc pl-5 space-y-2">
-                                {/* DB의 notices 문자열을 파이프(|)로 잘라서 보여줌 */}
-                                {mountain.notices ? (
-                                    mountain.notices.split("|").map((note, idx) => (
-                                        <li key={idx}>{note}</li>
-                                    ))
-                                ) : (
-                                    <li>등록된 유의사항이 없습니다.</li>
-                                )}
-                            </ul>
-                        </motion.footer>
+                        <motion.div className="px-4 mt-3">
+                            <footer className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg text-sm text-gray-700 shadow-sm">
+                                <h4 className="font-bold text-yellow-800 mb-2">⚠️ 안전 산행 유의사항</h4>
+                                <ul className="list-disc pl-5 space-y-2">
+                                    {mountain.notices ? (
+                                        mountain.notices.split("|").map((note, idx) => (
+                                            <li key={idx}>{note}</li>
+                                        ))
+                                    ) : (
+                                        <li>등록된 유의사항이 없습니다.</li>
+                                    )}
+                                </ul>
+                            </footer>
+                        </motion.div>
                     )}
                 </motion.div>
             </motion.section>

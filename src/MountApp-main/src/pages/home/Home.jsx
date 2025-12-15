@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Siren, Mountain } from "lucide-react";
+import { Siren, Mountain } from "lucide-react"; // 아이콘 유지
 import { Link } from "react-router-dom";
 import axios from "axios";
 
@@ -16,73 +16,92 @@ export default function Home() {
     const [disasterAlerts, setDisasterAlerts] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const FIRE_KEY = "17G3U9FEL969IHBS"; // 산불
-    const LAND_KEY = "46LDU080J8RP7ISF"; // 산사태
+    // ========================================================
+    // 1. [복구] 잘 작동하던 기존 API 키 및 XML 파싱 함수
+    // ========================================================
+    const API_KEY = "D4HOdxG7MU6ChcZPPl6q2mG2In/DM+wjAVif6pJFHS91I52JjltPYQOl5b26uQ1EBE7FuXWljJOodT1Ge4iLHA==";
+
+    const parseXML = (xmlText) => {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+        return xmlDoc;
+    };
 
     useEffect(() => {
-        // 산 정보 가져오기
+        // 2. [유지] 산 정보 가져오기 (DB)
         axios.get("/api/mountains")
             .then(res => setMountains(res.data))
             .catch(err => console.error("산 데이터 로딩 실패:", err));
 
+        // 3. [복구] 재난 정보 호출 로직 (XML 파싱 방식)
         const fetchDisasters = async () => {
             try {
-                const [fireRes, landRes] = await Promise.all([
-                    axios.get("/public-api/V2/api/DSSP-IF-10348", { params: { serviceKey: FIRE_KEY, _type: "json", numOfRows: 5, pageNo: 1 } }),
-                    axios.get("/public-api/V2/api/DSSP-IF-00735", { params: { serviceKey: LAND_KEY, _type: "json", numOfRows: 5, pageNo: 1 } }),
-                ]);
+                // (1) 산불 정보 호출
+                const fireRes = await axios.get(`/public/1400000/forestStusService/getForestStusInfo`, {
+                    params: { serviceKey: API_KEY, numOfRows: 5, pageNo: 1 }
+                });
+
+                // (2) 산사태 정보 호출
+                const landRes = await axios.get(`/public/1400000/forestLandslideService/getLandslideInfo`, {
+                    params: { serviceKey: API_KEY, numOfRows: 5, pageNo: 1 }
+                });
 
                 const newAlerts = [];
 
-                // 산불
-                fireRes.data?.items?.forEach((item, i) => {
+                // --- 산불 데이터 처리 (XML) ---
+                const fireDoc = parseXML(fireRes.data);
+                const fireItems = fireDoc.getElementsByTagName("item");
+                for (let i = 0; i < fireItems.length; i++) {
+                    const item = fireItems[i];
+                    const loc = item.getElementsByTagName("locNm")[0]?.textContent || "위치 미상";
+                    const time = item.getElementsByTagName("stDate")[0]?.textContent || "시간 미상";
                     newAlerts.push({
                         id: `fire-${i}`,
                         type: "FIRE",
-                        message: `${item.locNm} 인근 산불 발생`,
-                        time: item.stDate,
+                        message: `${loc} 인근 산불 발생`,
+                        time: time
                     });
-                });
+                }
 
-                // 산사태
-                landRes.data?.items?.forEach((item, i) => {
+                // --- 산사태 데이터 처리 (XML) ---
+                const landDoc = parseXML(landRes.data);
+                const landItems = landDoc.getElementsByTagName("item");
+                for (let i = 0; i < landItems.length; i++) {
+                    const item = landItems[i];
+                    const area = item.getElementsByTagName("areaName")[0]?.textContent || "지역 미상";
+                    const time = item.getElementsByTagName("createTime")[0]?.textContent || "";
+                    const level = item.getElementsByTagName("step")[0]?.textContent || "주의보";
                     newAlerts.push({
                         id: `land-${i}`,
                         type: "LANDSLIDE",
-                        message: `${item.areaName} 산사태 ${item.step} 발령`,
-                        time: item.createTime,
+                        message: `${area} 산사태 ${level} 발령`,
+                        time: time
                     });
-                });
+                }
 
-                // 테스트 데이터
+                // --- 테스트 데이터 (기능 확인용) ---
                 newAlerts.push({
                     id: "test-fire",
                     type: "FIRE",
                     message: "[테스트] 설악산 인근 대형 산불 발생",
-                    time: "2025-12-10 14:30",
+                    time: "2025-12-10 14:30"
                 });
                 newAlerts.push({
                     id: "test-land",
                     type: "LANDSLIDE",
                     message: "[테스트] 강원도 평창군 산사태 경보",
-                    time: "2025-12-10 14:35",
+                    time: "2025-12-10 14:35"
                 });
 
-                setDisasterAlerts(newAlerts.length ? newAlerts : [{
-                    id: 999,
-                    type: "INFO",
-                    message: "현재 발효된 특보가 없습니다.",
-                    time: new Date().toLocaleTimeString(),
-                }]);
+                if (newAlerts.length === 0) {
+                    setDisasterAlerts([{ id: 999, type: "INFO", message: "현재 발효된 특보가 없습니다.", time: new Date().toLocaleTimeString() }]);
+                } else {
+                    setDisasterAlerts(newAlerts);
+                }
 
             } catch (error) {
                 console.error("재난 API 호출 실패:", error);
-                setDisasterAlerts([{
-                    id: 0,
-                    type: "INFO",
-                    message: "재난 정보를 불러오지 못했습니다.",
-                    time: "",
-                }]);
+                setDisasterAlerts([{ id: 0, type: "INFO", message: "재난 정보를 불러오지 못했습니다.", time: "" }]);
             } finally {
                 setLoading(false);
             }
@@ -101,7 +120,7 @@ export default function Home() {
                 transition={{ staggerChildren: 0.1 }}
                 className="flex flex-col p-4 space-y-6 w-full max-w-[450px] bg-white shadow-2xl min-h-screen"
             >
-                {/* 헤더 */}
+                {/* 헤더 (새로운 UI 유지) */}
                 <motion.header variants={fadeIn} className="flex items-center gap-2 py-3">
                     <img src={logo} alt="MountApp 로고" className="w-8 h-8 object-contain" />
                     <h1 className="text-3xl font-extrabold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent drop-shadow-sm">
@@ -126,8 +145,13 @@ export default function Home() {
                             </div>
                         ) : (
                             filteredMountains.map((mt) => (
-                                <motion.div key={mt.name} variants={fadeIn} className="min-w-[200px] max-w-[200px] bg-white rounded-lg shadow-md overflow-hidden flex-shrink-0 border border-gray-100">
-                                    <Link to={`/mountain/${mt.name}`}>
+                                // [수정] key를 mt.name -> mt.id로 변경 (유니크한 값 권장)
+                                <motion.div key={mt.id} variants={fadeIn} className="min-w-[200px] max-w-[200px] bg-white rounded-lg shadow-md overflow-hidden flex-shrink-0 border border-gray-100">
+                                    {/* [복구 중요!]
+                                        링크를 mt.name이 아닌 mt.id로 변경했습니다.
+                                        이제 DB에서 가져온 ID를 통해 동적 페이지(/mountain/1 등)로 이동합니다.
+                                    */}
+                                    <Link to={`/mountain/${mt.id}`}>
                                         <img
                                             src={mt.imageUrl?.split(",")[0] || "https://via.placeholder.com/200"}
                                             alt={mt.name}
@@ -148,7 +172,7 @@ export default function Home() {
                     </div>
                 </motion.div>
 
-                {/* 재난 알림 */}
+                {/* 재난 알림 (새로운 UI 유지 + 기능 복구) */}
                 <motion.div variants={fadeIn}>
                     <div className="flex items-center space-x-2 pb-1 mb-2 border-b-2 border-red-400">
                         <Siren className="w-7 h-7 text-red-700 animate-pulse -translate-y-[3px]" />
@@ -163,8 +187,8 @@ export default function Home() {
                     </div>
                 </motion.div>
 
-                {/* 유의사항 */}
-                <motion.footer variants={fadeIn} className="mt-6 bg-gray-100 border-l-4 border-gray-500 p-4 rounded-lg text-sm text-gray-700">
+                {/* 유의사항 (새로운 UI 유지) */}
+                <motion.footer variants={fadeIn} className="mt-6 bg-gray-100 border-l-4 border-gray-500 p-4 rounded-lg text-sm text-gray-700 pb-24">
                     <h4 className="font-bold text-gray-700 mb-1">☑️ 유의사항</h4>
                     <ul className="list-disc pl-5 space-y-1">
                         <li>등산 전 반드시 기상청, 산림청 등 정보를 확인하세요.</li>
