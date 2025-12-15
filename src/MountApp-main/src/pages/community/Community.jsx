@@ -1,17 +1,21 @@
-
-
-import { useState, useEffect,   useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Star, StarHalf,PenLine, Camera} from "lucide-react";
+import { Star, StarHalf, PenLine, Camera } from "lucide-react";
 import axios from "axios";
 
 export default function Community() {
     const navigate = useNavigate();
 
-    // 데이터를 저장할 State
     const [posts, setPosts] = useState([]);   // 일반 게시글
     const [reviews, setReviews] = useState([]); // 리뷰
+
+    // 선택된 카테고리 State (기본: 전체)
+    const [selectedCategory, setSelectedCategory] = useState("전체");
+
+    // 필터 카테고리 목록
+    const categories = ["전체", "산", "등산 용품", "맛집", "숙소"];
+
     const alertShown = useRef(false);
 
     const getImageUrl = (path) => {
@@ -22,21 +26,18 @@ export default function Community() {
 
     // 1. 백엔드 데이터 불러오기
     useEffect(() => {
-        // (1) 로컬 스토리지에서 토큰 가져오기
         const token = localStorage.getItem("jwtToken");
         console.log("현재 내 토큰:", token);
 
         axios.get("http://localhost:8082/api/posts", {
-            // (2) 헤더에 토큰 실어 보내기
             headers: {
                 Authorization: `Bearer ${token}`
             }
         })
             .then((response) => {
                 const allData = response.data;
-                console.log("서버 응답 데이터:", allData); // F12 콘솔에서 데이터 구조 꼭 확인하세요!
+                console.log("서버 응답 데이터:", allData);
 
-                // 2. 데이터 분류 로직
                 const normalPosts = allData.filter((item) => item.rating === 0);
                 const reviewPosts = allData.filter((item) => item.rating > 0);
 
@@ -45,16 +46,8 @@ export default function Community() {
             })
             .catch((error) => {
                 console.error("데이터 로딩 실패:", error);
-
-                // (3) 인증 실패(403 Forbidden, 401 Unauthorized) 시 로그인 페이지로 이동
                 if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-
-                    // [핵심] "이미 알림창 띄운 적 있어?" 체크
-                    if (alertShown.current) {
-                        return; // 띄운 적 있으면 여기서 바로 멈춤 (두 번째 실행 막음)
-                    }
-
-                    // 띄운 적 없다면 실행 + 기록 남기기
+                    if (alertShown.current) return;
                     alertShown.current = true;
                     alert("로그인이 필요한 서비스입니다.");
                     navigate("/login");
@@ -62,42 +55,27 @@ export default function Community() {
             });
     }, [navigate]);
 
-
-
-    // 별점 렌더링 함수 (최종 수정)
+    // 별점 렌더링 함수
     const renderStars = (rating) => {
         const score = Number(rating) || 0;
-
-        // 1. 꽉 찬 별의 개수 (예: 4.5 -> 4개)
         const fullStars = Math.floor(score);
-
-        // 2. 반쪽 별이 필요한지 여부 (예: 4.5 - 4 = 0.5 -> true)
-        // 0.5 이상이면 반쪽 별을 표시 (4.3점은 4개, 4.5점은 4.5개)
         const hasHalfStar = score - fullStars >= 0.5;
 
         return (
             <div className="flex items-center space-x-1">
                 {[1, 2, 3, 4, 5].map((idx) => {
-                    // (1) 현재 인덱스가 꽉 찬 별 개수보다 작거나 같으면 -> Full
-                    if (idx <= fullStars) {
-                        return <Star key={idx} size={14} className="text-yellow-400 fill-yellow-400" />;
-                    }
-
-                        // (2) 현재 인덱스가 '꽉 찬 별 다음'이고, 반쪽 별이 필요하다면 -> Half
-                    // 예: 4.5점일 때, idx가 5인 경우 여기에 걸림
-                    else if (idx === fullStars + 1 && hasHalfStar) {
-                        return <StarHalf key={idx} size={14} className="text-yellow-400 fill-yellow-400" />;
-
-                    }
-
-                    // (3) 그 외 -> Empty
-                    else {
-                        return <Star key={idx} size={14} className="text-gray-300" />;
-                    }
+                    if (idx <= fullStars) return <Star key={idx} size={14} className="text-yellow-400 fill-yellow-400" />;
+                    else if (idx === fullStars + 1 && hasHalfStar) return <StarHalf key={idx} size={14} className="text-yellow-400 fill-yellow-400" />;
+                    else return <Star key={idx} size={14} className="text-gray-300" />;
                 })}
             </div>
         );
     };
+
+    // 2️⃣ 선택된 카테고리 기반 리뷰 필터링
+    const filteredReviews = selectedCategory === "전체"
+        ? reviews
+        : reviews.filter((review) => review.category === selectedCategory);
 
     return (
         <motion.section className="flex flex-col h-screen">
@@ -113,7 +91,6 @@ export default function Community() {
                 <motion.section className="overflow-x-auto">
                     <div className="flex justify-between items-center mb-4">
                         <h3 className="text-xl font-semibold">📢 게시글</h3>
-                        {/* 글쓰기 버튼 */}
                         <motion.button
                             whileTap={{ scale: 0.95 }}
                             className="flex items-center gap-1 px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-semibold shadow-sm hover:bg-blue-700 transition-colors"
@@ -128,11 +105,9 @@ export default function Community() {
                         {posts.length > 0 ? (
                             posts.map((post) => (
                                 <motion.div
-                                    // DB 컬럼명 호환성 처리 (postId가 없으면 id 사용)
                                     key={post.id}
                                     className="flex-shrink-0 w-64 border rounded-2xl p-4 bg-white shadow-md cursor-pointer"
                                     whileHover={{ scale: 1.02 }}
-                                    // 상세 페이지 이동 시 ID 전달
                                     onClick={() => navigate(`/community/DetailPage/${post.id}`)}
                                 >
                                     <div className="flex items-center mb-3">
@@ -141,16 +116,10 @@ export default function Community() {
                                                 {post.nickname ? post.nickname.substring(0, 2) : "??"}
                                             </div>
                                         </div>
-
-                                        <span className="font-medium text-sm">
-                                            {post.nickname || "익명"}
-                                        </span>
+                                        <span className="font-medium text-sm">{post.nickname || "익명"}</span>
                                     </div>
                                     <h4 className="font-bold mb-1 truncate">{post.title}</h4>
-                                    {/* 내용: DB POSTCONTENTS 컬럼 대응 */}
-                                    <p className="text-gray-600 text-sm line-clamp-2">
-                                        {post.comment}
-                                    </p>
+                                    <p className="text-gray-600 text-sm line-clamp-2">{post.comment}</p>
                                 </motion.div>
                             ))
                         ) : (
@@ -163,9 +132,8 @@ export default function Community() {
                 <motion.section className="overflow-x-auto">
                     <div className="flex justify-between items-center mb-3">
                         <h3 className="text-xl font-semibold">⭐️ 리뷰</h3>
-                        {/* 리뷰 작성 버튼 */}
                         <motion.button
-                            whileTap={{ scale: 0.95 }} // 클릭 시 살짝 작아지는 애니메이션
+                            whileTap={{ scale: 0.95 }}
                             className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white rounded-full text-sm font-semibold shadow-sm hover:bg-green-700 transition-colors"
                             onClick={() => navigate("/community/new-review", { state: { type: "review" } })}
                         >
@@ -174,33 +142,47 @@ export default function Community() {
                         </motion.button>
                     </div>
 
+                    {/* 3️⃣ 필터 버튼 UI */}
+                    <div className="flex gap-2 mb-4 overflow-x-auto hide-scrollbar pb-1 px-1">
+                        {categories.map((cat) => (
+                            <button
+                                key={cat}
+                                onClick={() => setSelectedCategory(cat)}
+                                className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors border ${
+                                    selectedCategory === cat
+                                        ? "bg-green-600 text-white border-green-600"
+                                        : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+                                }`}
+                            >
+                                {cat}
+                            </button>
+                        ))}
+                    </div>
+
                     <motion.div className="flex gap-4 pb-4 px-1 overflow-x-auto snap-x">
-                        {reviews.length > 0 ? (
-                            reviews.map((review,index) => (
+                        {filteredReviews.length > 0 ? (
+                            filteredReviews.map((review, index) => (
                                 <motion.div
                                     key={review.id || index}
                                     className="snap-center flex-shrink-0 w-72 bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 cursor-pointer group"
-                                    whileHover={{ y: -4, shadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)" }} // 호버 시 위로 살짝 뜨는 효과
+                                    whileHover={{ y: -4, shadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)" }}
                                     transition={{ type: "spring", stiffness: 300 }}
                                     onClick={() => navigate(`/community/review/${review.postId || review.postid || review.id}`)}
                                 >
-                                    {/* 이미지: DB IMAGE_PATH 컬럼 대응 */}
-                                    {(review.imagePath || review.image_path || review.image) && (
+                                    {(review.imagePath || review.image_path || review.image) ? (
                                         <div className="h-40 w-full bg-gray-100 relative overflow-hidden">
                                             <img
                                                 src={getImageUrl(review.imagePath)}
                                                 alt="post-img"
                                                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                             />
-                                            ) : (
-                                            <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                                                <Camera size={32} />
-                                            </div>
                                         </div>
-
+                                    ) : (
+                                        <div className="h-40 w-full flex flex-col items-center justify-center text-gray-400 bg-gray-100">
+                                            <Camera size={32} />
+                                        </div>
                                     )}
-                                    <div className="flex-shrink-0 w-80 bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 p-4 cursor-pointer hover:shadow-md transition-all">
-                                        {/* 작성자 영역 */}
+                                    <div className="p-4">
                                         <div className="flex items-center gap-3 mb-3">
                                             <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-500">
                                                 {review.nickname ? review.nickname.substring(0, 2) : "??"}
@@ -208,17 +190,16 @@ export default function Community() {
                                             <span className="font-medium text-gray-700 truncate">{review.nickname || "익명"}</span>
                                         </div>
 
-                                        {/* 제목 + 별점 */}
-                                        <div className="flex justify-between items-center mb-2">
-                                            <h4 className="font-bold text-gray-900 truncate">{review.title}</h4>
-                                            {renderStars(review.rating)}
+                                        <div className="relative mb-1">
+                                            <h4 className="font-bold text-base text-gray-900 truncate pr-16">{review.title}</h4>
+                                            <div className="absolute right-10 top-0 flex-shrink-0">
+                                                {renderStars(review.rating)}
+                                            </div>
                                         </div>
 
-                                        {/* 내용 */}
                                         <p className="text-gray-600 text-sm line-clamp-3 leading-relaxed">
                                             {review.postContents || review.postcontents || review.comment}
                                         </p>
-
                                     </div>
                                 </motion.div>
                             ))
