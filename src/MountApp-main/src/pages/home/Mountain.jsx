@@ -10,6 +10,9 @@
   export default function Mountain() {
     const { name } = useParams();
     const mountain = guides.find((g) => g.name === name);
+      console.log("URL 파라미터:", name);
+      console.log("전체 데이터:", guides);
+      console.log("찾은 결과:", mountain);
     const [tab, setTab] = useState("home"); 
 
     return (

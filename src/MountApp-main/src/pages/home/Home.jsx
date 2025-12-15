@@ -126,8 +126,8 @@ export default function Home() {
                             </div>
                         ) : (
                             filteredMountains.map((mt) => (
-                                <motion.div key={mt.id} variants={fadeIn} className="min-w-[200px] max-w-[200px] bg-white rounded-lg shadow-md overflow-hidden flex-shrink-0 border border-gray-100">
-                                    <Link to={`/mountain/${mt.id}`}>
+                                <motion.div key={mt.name} variants={fadeIn} className="min-w-[200px] max-w-[200px] bg-white rounded-lg shadow-md overflow-hidden flex-shrink-0 border border-gray-100">
+                                    <Link to={`/mountain/${mt.name}`}>
                                         <img
                                             src={mt.imageUrl?.split(",")[0] || "https://via.placeholder.com/200"}
                                             alt={mt.name}
