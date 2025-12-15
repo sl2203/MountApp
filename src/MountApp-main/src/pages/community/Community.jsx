@@ -3,7 +3,7 @@
 import { useState, useEffect,   useRef } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Star, StarHalf } from "lucide-react";
+import { Star, StarHalf,PenLine, Camera} from "lucide-react";
 import axios from "axios";
 
 export default function Community() {
@@ -114,12 +114,14 @@ export default function Community() {
                     <div className="flex justify-between items-center mb-4">
                         <h3 className="text-xl font-semibold">📢 게시글</h3>
                         {/* 글쓰기 버튼 */}
-                        <button
-                            className="px-3 py-1 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600"
+                        <motion.button
+                            whileTap={{ scale: 0.95 }}
+                            className="flex items-center gap-1 px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-semibold shadow-sm hover:bg-blue-700 transition-colors"
                             onClick={() => navigate("/community/new-post", { state: { type: "post" } })}
                         >
-                            글쓰기
-                        </button>
+                            <PenLine size={16} />
+                            <span>글쓰기</span>
+                        </motion.button>
                     </div>
 
                     <motion.div className="flex gap-4 pb-3 overflow-x-auto">
@@ -162,52 +164,62 @@ export default function Community() {
                     <div className="flex justify-between items-center mb-3">
                         <h3 className="text-xl font-semibold">⭐️ 리뷰</h3>
                         {/* 리뷰 작성 버튼 */}
-                        <button
-                            className="px-3 py-1 bg-green-500 text-white rounded-lg text-sm hover:bg-green-600"
+                        <motion.button
+                            whileTap={{ scale: 0.95 }} // 클릭 시 살짝 작아지는 애니메이션
+                            className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white rounded-full text-sm font-semibold shadow-sm hover:bg-green-700 transition-colors"
                             onClick={() => navigate("/community/new-review", { state: { type: "review" } })}
                         >
-                            리뷰 작성
-                        </button>
+                            <Camera size={16} />
+                            <span>리뷰 작성</span>
+                        </motion.button>
                     </div>
 
-                    <motion.div className="flex gap-4 pb-3 overflow-x-auto">
+                    <motion.div className="flex gap-4 pb-4 px-1 overflow-x-auto snap-x">
                         {reviews.length > 0 ? (
                             reviews.map((review,index) => (
                                 <motion.div
                                     key={review.id || index}
-                                    className="flex-shrink-0 w-64 border rounded-2xl p-4 bg-white shadow-md cursor-pointer"
-                                    whileHover={{ scale: 1.02 }}
+                                    className="snap-center flex-shrink-0 w-72 bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 cursor-pointer group"
+                                    whileHover={{ y: -4, shadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)" }} // 호버 시 위로 살짝 뜨는 효과
+                                    transition={{ type: "spring", stiffness: 300 }}
                                     onClick={() => navigate(`/community/review/${review.postId || review.postid || review.id}`)}
                                 >
                                     {/* 이미지: DB IMAGE_PATH 컬럼 대응 */}
                                     {(review.imagePath || review.image_path || review.image) && (
-                                        <div className="w-full h-32 mb-3 rounded-lg overflow-hidden">
+                                        <div className="h-40 w-full bg-gray-100 relative overflow-hidden">
                                             <img
                                                 src={getImageUrl(review.imagePath)}
                                                 alt="post-img"
-                                                className="w-full h-full object-cover"
+                                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                             />
+                                            ) : (
+                                            <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                                                <Camera size={32} />
+                                            </div>
                                         </div>
+
                                     )}
-
-                                    <div className="flex items-center mb-3">
-                                        <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden flex-shrink-0 flex items-center justify-center text-xs font-bold text-gray-500">
-                                            {review.nickname ? review.nickname.substring(0, 2) : "??"}
+                                    <div className="flex-shrink-0 w-80 bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 p-4 cursor-pointer hover:shadow-md transition-all">
+                                        {/* 작성자 영역 */}
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-500">
+                                                {review.nickname ? review.nickname.substring(0, 2) : "??"}
+                                            </div>
+                                            <span className="font-medium text-gray-700 truncate">{review.nickname || "익명"}</span>
                                         </div>
-                                        <span className="font-medium text-sm">
-                                            {review.nickname || "익명"}
-                                        </span>
-                                    </div>
 
-                                    <div className="flex justify-between items-center mb-2">
-                                        <h4 className="font-bold truncate w-24">{review.title}</h4>
+                                        {/* 제목 + 별점 */}
+                                        <div className="flex justify-between items-center mb-2">
+                                            <h4 className="font-bold text-gray-900 truncate">{review.title}</h4>
+                                            {renderStars(review.rating)}
+                                        </div>
 
-                                        {/* 수정된 함수 사용: review 객체가 아니라 review.rating(점수)을 전달 */}
-                                        {renderStars(review.rating)}
+                                        {/* 내용 */}
+                                        <p className="text-gray-600 text-sm line-clamp-3 leading-relaxed">
+                                            {review.postContents || review.postcontents || review.comment}
+                                        </p>
+
                                     </div>
-                                    <p className="text-gray-600 text-sm line-clamp-2">
-                                        {review.postContents || review.postcontents || review.comment}
-                                    </p>
                                 </motion.div>
                             ))
                         ) : (
