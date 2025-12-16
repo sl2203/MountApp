@@ -8,4 +8,6 @@
     public interface PostRepository extends JpaRepository<Post_Review, Long> {
         long countByUser_Userid(String userid);
         List<Post_Review> findByUser_UseridOrderByPostidDesc(String userid);
+
+        List<Post_Review> findAllByOrderByPostidDesc();
     }
