@@ -1,9 +1,13 @@
 package com.example.mountapp.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -24,8 +28,9 @@ public class Mountain {
     @Column(length = 2000)
     private String description;
 
-    @Column(length = 2000)
-    private String trails; // 코스 정보
+    @OneToMany(mappedBy = "mountain", cascade = CascadeType.ALL)
+    @JsonManagedReference // 순환 참조 방지 (이 쪽 데이터를 보여줌)
+    private List<Trail> trails = new ArrayList<>();
 
     @Column(name = "IMAGE_URL", length = 1000)
     private String imageUrl;

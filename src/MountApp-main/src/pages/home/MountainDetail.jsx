@@ -141,64 +141,58 @@ export default function MountainDetail() {
                     {/* [기능 2] 코스 정보 탭 (카드 UI 적용) */}
                     {tab === "course" && (
                         <motion.div
-                            className="px-4 py-4 bg-gray-50 min-h-[400px]" // 배경색 추가
+                            className="px-4 py-4 bg-gray-50 min-h-[400px]"
                             initial={{ opacity: 0, y: 15 }}
                             animate={{ opacity: 1, y: 0 }}
                         >
                             <div className="space-y-4">
-                                {mountain.trails ? (
-                                    mountain.trails.split(/\\n|\n/).map((line, index) => {
-                                        if (!line.trim()) return null;
+                                {/* trails가 배열인지 확인하고 map 실행 */}
+                                {mountain.trails && mountain.trails.length > 0 ? (
+                                    mountain.trails.map((trail, index) => (
+                                        <div key={index} className="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
 
-                                        // UI를 위한 임시 데이터 생성 (DB 업데이트 전까지 사용)
-                                        const isPopular = index === 0; // 첫 번째 코스만 인기
-                                        const difficulty = index % 2 === 0 ? "보통" : "어려움";
-                                        const time = index === 0 ? "4시간 30분" : "3시간";
-                                        const distance = index === 0 ? "9.6km" : "5.8km";
+                                            {/* 상단: 코스 이름 + 깃발 */}
+                                            <div className="flex items-start justify-between mb-2">
+                                                <h4 className="font-bold text-lg text-gray-800 flex items-center gap-1">
+                                                    {trail.name}
+                                                    <Flag className="w-4 h-4 text-gray-400 ml-1 fill-gray-100" />
+                                                </h4>
+                                            </div>
 
-                                        return (
-                                            <div key={index} className="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
-                                                {/* 상단: 코스 이름 + 깃발 */}
-                                                <div className="flex items-start justify-between mb-2">
-                                                    <h4 className="font-bold text-lg text-gray-800 flex items-center gap-1">
-                                                        {line.length > 20 ? `${mountain.name} ${index + 1}코스` : line}
-                                                        <Flag className="w-4 h-4 text-gray-400 ml-1 fill-gray-100" />
-                                                    </h4>
+                                            {/* 설명 */}
+                                            <p className="text-gray-500 text-sm mb-4 line-clamp-2">
+                                                {trail.description}
+                                            </p>
+
+                                            {/* 태그 (인기, 난이도) */}
+                                            <div className="flex gap-2 mb-6">
+                                                {trail.isPopular && (
+                                                    <span className="px-2 py-1 bg-blue-50 text-blue-600 text-xs font-bold rounded-md">
+                                    인기
+                                </span>
+                                                )}
+                                                <span className={`px-2 py-1 text-xs font-bold rounded-md ${
+                                                    trail.difficulty === "쉬움" ? "bg-green-50 text-green-600" :
+                                                        trail.difficulty === "보통" ? "bg-gray-100 text-gray-600" :
+                                                            "bg-red-50 text-red-600"
+                                                }`}>
+                                {trail.difficulty || "정보 없음"}
+                            </span>
+                                            </div>
+
+                                            {/* 하단: 시간 및 거리 */}
+                                            <div className="flex justify-end items-center gap-4 text-sm text-gray-500 font-medium">
+                                                <div className="flex items-center gap-1">
+                                                    <Clock className="w-4 h-4 text-gray-400" />
+                                                    <span>{trail.uptime || "-"}</span>
                                                 </div>
-
-                                                {/* 설명 (긴 줄글일 경우 자르기) */}
-                                                <p className="text-gray-500 text-sm mb-4 line-clamp-2">
-                                                    {line}
-                                                </p>
-
-                                                {/* 태그 (인기, 난이도) */}
-                                                <div className="flex gap-2 mb-6">
-                                                    {isPopular && (
-                                                        <span className="px-2 py-1 bg-blue-50 text-blue-600 text-xs font-bold rounded-md">
-                                                            인기
-                                                        </span>
-                                                    )}
-                                                    <span className={`px-2 py-1 text-xs font-bold rounded-md ${
-                                                        difficulty === "보통" ? "bg-gray-100 text-gray-600" : "bg-red-50 text-red-600"
-                                                    }`}>
-                                                        {difficulty}
-                                                    </span>
-                                                </div>
-
-                                                {/* 하단: 시간 및 거리 */}
-                                                <div className="flex justify-end items-center gap-4 text-sm text-gray-500 font-medium">
-                                                    <div className="flex items-center gap-1">
-                                                        <Clock className="w-4 h-4 text-gray-400" />
-                                                        <span>{time}</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-1">
-                                                        <MapPin className="w-4 h-4 text-gray-400" />
-                                                        <span>{distance}</span>
-                                                    </div>
+                                                <div className="flex items-center gap-1">
+                                                    <MapPin className="w-4 h-4 text-gray-400" />
+                                                    <span>{trail.distance || "-"}</span>
                                                 </div>
                                             </div>
-                                        );
-                                    })
+                                        </div>
+                                    ))
                                 ) : (
                                     <div className="text-center py-10 text-gray-400 bg-white rounded-2xl shadow-sm">
                                         <MapPin className="w-10 h-10 mx-auto mb-2 opacity-20" />

@@ -1,6 +1,7 @@
 package com.example.mountapp.controller;
 
 import com.example.mountapp.domain.Mountain;
+import com.example.mountapp.dto.MountainDetailDTO;
 import com.example.mountapp.repository.MountainRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +23,9 @@ public class MountainController {
 
     // 2. 상세 조회 (GET /api/mountains/1)
     @GetMapping("/{id}")
-    public ResponseEntity<Mountain> getMountainById(@PathVariable Long id) {
+    public ResponseEntity<MountainDetailDTO> getMountainById(@PathVariable Long id) {
         return mountainRepository.findById(id)
-                .map(ResponseEntity::ok)
+                .map(mountain -> ResponseEntity.ok(new MountainDetailDTO(mountain)))
                 .orElse(ResponseEntity.notFound().build());
     }
 }
