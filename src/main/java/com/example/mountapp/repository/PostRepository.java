@@ -6,8 +6,6 @@
     import java.util.List;
 
     public interface PostRepository extends JpaRepository<Post_Review, Long> {
-        // 게시글 ID 내림차순(최신순)으로 전체 조회
-        List<Post_Review> findAllByOrderByPostidDesc();
         long countByUser_Userid(String userid);
         List<Post_Review> findByUser_UseridOrderByPostidDesc(String userid);
     }
