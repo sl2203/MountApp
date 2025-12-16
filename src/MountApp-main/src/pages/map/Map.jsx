@@ -132,7 +132,7 @@ export default function Map() {
 
             // 클릭 시 상세 페이지 이동
             window.kakao.maps.event.addListener(marker, "click", () => {
-                navigate(`/mountain/${name}`);
+                navigate(`/mountain/${mountain.id}`);
             });
         });
     };

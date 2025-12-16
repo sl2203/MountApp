@@ -25,8 +25,8 @@ function App() {
                 <Route path="/mypage/change" element={<ProfileChange />} />
                 <Route element={<MainLayout />}>
                     <Route path="/" element={<Home />} />
-                    <Route path="/mountain/:id" element={<MountainDetail />} />
                     <Route path="/map" element={<Map />} />
+                    <Route path="/mountain/:id" element={<MountainDetail />} />
                     <Route path="/community" element={<Community />} />
                     <Route path="/community/new-post" element={<NewPost type="post"   />} />
                     <Route path="/community/new-review" element={<NewPost type="review" />} />
