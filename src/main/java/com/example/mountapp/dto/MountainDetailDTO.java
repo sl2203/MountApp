@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
-public class MountainDetailDTO {
+public  class MountainDetailDTO {
     private Long id;
     private String name;
     private Integer height;
@@ -18,6 +18,8 @@ public class MountainDetailDTO {
     private String imageUrl;
     private String notices;
     private List<TrailDTO> trails; // 구조화된 코스 리스트
+    private Double lat;
+    private Double lon;
 
     public MountainDetailDTO(Mountain m) {
         this.id = m.getId();
@@ -28,7 +30,8 @@ public class MountainDetailDTO {
         this.description = m.getDescription();
         this.imageUrl = m.getImageUrl();
         this.notices = m.getNotices();
-        // Trail 엔티티 -> DTO 변환
+        this.lat = m.getLat();
+        this.lon = m.getLon();
         this.trails = m.getTrails().stream().map(TrailDTO::new).collect(Collectors.toList());
     }
 
