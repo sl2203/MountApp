@@ -15,10 +15,12 @@ export default function Header() {
 
     const handleLogout = () => {
         localStorage.removeItem("jwtToken");
+        localStorage.removeItem("role");
         setIsLoggedIn(false);
         alert("로그아웃 되었습니다.");
         navigate("/");
         window.location.reload();
+        window.location.href = "/login";
     };
 
     return (
