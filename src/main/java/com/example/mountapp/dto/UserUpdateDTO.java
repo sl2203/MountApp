@@ -11,8 +11,5 @@ public class UserUpdateDTO {
     private String gender;
     private String phone;
     private String email;
-
-    public String getNickname() {
-        return "";
-    }
+    private String nickname;
 }
