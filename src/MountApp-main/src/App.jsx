@@ -2,7 +2,6 @@ import { Routes, Route } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/home/Home";
 import MountainDetail from "./pages/home/MountainDetail.jsx";
-import Mountain from "./pages/home/Mountain";
 import Map from "./pages/map/Map";
 import Community from "./pages/community/Community";
 import MyPage from "./pages/mypage/MyPage";
@@ -27,7 +26,6 @@ function App() {
                 <Route element={<MainLayout />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/mountain/:id" element={<MountainDetail />} />
-                    <Route path="/mountain/:name" element={<Mountain />} />
                     <Route path="/map" element={<Map />} />
                     <Route path="/community" element={<Community />} />
                     <Route path="/community/new-post" element={<NewPost type="post"   />} />
