@@ -1,17 +1,18 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef } from "react";
 import axios from "axios";
 import { ChevronRight, FileText, Heart, MessageSquare, ThumbsUp } from "lucide-react";
 
 // --- 하위 컴포넌트 ---
-const PostCard = ({ post, onClick }) => (
+const PostCard = forwardRef(({ post, onClick }, ref) => (
     <motion.div
+        ref={ref} // ★ 여기에 ref 연결 필수
         layout
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
-        onClick={() => onClick(post.id, post.type)} // 클릭 시 이동 핸들러 실행
+        onClick={() => onClick(post.id, post.type)}
         className="block bg-white border border-gray-200 rounded-xl p-4 mb-3 hover:border-gray-400 transition-colors cursor-pointer shadow-sm hover:shadow-md"
     >
         <div className="flex justify-between items-start mb-2">
@@ -36,7 +37,7 @@ const PostCard = ({ post, onClick }) => (
             </div>
         </div>
     </motion.div>
-);
+));
 
 const ProfileButton = ({ label, onClick }) => (
     <button
