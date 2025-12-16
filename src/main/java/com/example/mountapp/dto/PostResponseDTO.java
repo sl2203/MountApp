@@ -19,7 +19,7 @@
         private int likeCount; // 총 좋아요 수
         private boolean liked;
         private String profileImage;
-
+        private int commentCount;
         public PostResponseDTO(Post_Review entity) {
             this.id = entity.getPostid();
             this.title = entity.getTitle();

@@ -105,4 +105,18 @@ public class PostController {
         long count = postService.getMyPostCount(userid);
         return ResponseEntity.ok(count);
     }
+    @GetMapping("/posts/my")
+    public ResponseEntity<List<PostResponseDTO>> getMyPosts(@AuthenticationPrincipal Object principal) {
+        if (principal == null) return ResponseEntity.status(401).build();
+
+        String userid;
+        if (principal instanceof UserDetails) {
+            userid = ((UserDetails) principal).getUsername();
+        } else {
+            userid = (String) principal;
+        }
+
+        List<PostResponseDTO> myPosts = postService.getMyPosts(userid);
+        return ResponseEntity.ok(myPosts);
+    }
 }

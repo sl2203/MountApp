@@ -4,6 +4,7 @@ import com.example.mountapp.domain.Post_Review;
 import com.example.mountapp.domain.User;
 import com.example.mountapp.dto.PostRequestDTO;
 import com.example.mountapp.dto.PostResponseDTO;
+import com.example.mountapp.repository.CommentRepository;
 import com.example.mountapp.repository.LikesRepository; // [추가]
 import com.example.mountapp.repository.PostRepository;
 import com.example.mountapp.repository.UserRepository;
@@ -27,19 +28,16 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final LikesRepository likesRepository; // [추가] 좋아요 데이터 접근용
-
+    private final CommentRepository commentRepository;
     @Value("${file.upload-dir}")
     private String uploadDir;
 
     @Transactional(readOnly = true)
     public List<PostResponseDTO> getAllPosts() {
+        // 목록 조회 시에도 좋아요 개수를 보여주고 싶다면 아래 주석 해제
+        // dto.setLikeCount(likeRepository.countByPostid(entity.getPostid()));
         return postRepository.findAll().stream()
-                .map(entity -> {
-                    PostResponseDTO dto = new PostResponseDTO(entity);
-                    // 목록 조회 시에도 좋아요 개수를 보여주고 싶다면 아래 주석 해제
-                    // dto.setLikeCount(likeRepository.countByPostid(entity.getPostid()));
-                    return dto;
-                })
+                .map(PostResponseDTO::new)
                 .collect(Collectors.toList());
     }
 
@@ -132,5 +130,25 @@ public class PostService {
     @Transactional(readOnly = true)
     public long getMyPostCount(String userid) {
         return postRepository.countByUser_Userid(userid);
+    }
+    @Transactional(readOnly = true)
+    public List<PostResponseDTO> getMyPosts(String userid) {
+        // 1. 내가 쓴 글 조회
+        List<Post_Review> posts = postRepository.findByUser_UseridOrderByPostidDesc(userid);
+
+        // 2. DTO 변환 (좋아요 수, 댓글 수 포함)
+        return posts.stream().map(post -> {
+            PostResponseDTO dto = new PostResponseDTO(post);
+
+            // 좋아요 수 (LikesRepository 혹은 Post 엔티티의 필드 사용)
+            // Post_Review 엔티티에 likes 필드가 있고 동기화된다면 post.getLikes() 사용
+            // 동기화가 안된다면 likesRepository.countByPostid(post.getPostid()) 사용
+            dto.setLikeCount(likesRepository.countByPostid(post.getPostid()));
+
+            // 댓글 수 세팅
+            dto.setCommentCount(commentRepository.countByPostId(post.getPostid()));
+
+            return dto;
+        }).collect(Collectors.toList());
     }
 }
