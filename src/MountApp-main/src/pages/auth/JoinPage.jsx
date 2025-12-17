@@ -119,7 +119,7 @@ export default function JoinPage() {
 
             if (response.status === 200) {
                 alert("회원가입 성공! 로그인 페이지로 이동합니다.");
-                navigate('/home');
+                navigate('/');
             }
         } catch (error) {
             console.error("회원가입 에러:", error);
