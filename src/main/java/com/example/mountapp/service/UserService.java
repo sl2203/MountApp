@@ -7,6 +7,7 @@ import com.example.mountapp.dto.UserUpdateDTO; // ★ 추가됨: DTO import 확�
 import com.example.mountapp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,9 +18,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile; // ★ 추가됨: 파일 업로드용
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-
+import java.util.UUID;
+import java.io.IOException;
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
@@ -28,7 +31,8 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     // private final FileService fileService; // ★ 만약 파일 저장 서비스가 따로 있다면 주석 해제
-
+    @Value("${file.upload-dir}")
+    private String uploadDir;
     // 1. 회원가입 (동료분 코드)
     public User join(JoinRequestDto dto) {
         if (userRepository.findByUserid(dto.getUserid()).isPresent()) {
@@ -105,25 +109,37 @@ public class UserService implements UserDetailsService {
 
     // 6. 프로필 수정 (AuthController의 put /me에서 사용)
     @Transactional
-    public User updateProfile(String userid, UserUpdateDTO dto, MultipartFile file) {
+    public User updateProfile(String userid, UserUpdateDTO dto, MultipartFile file) throws IOException { // ★ 여기 throws IOException 추가!
         User user = userRepository.findByUserid(userid)
                 .orElseThrow(() -> new RuntimeException("사용자 정보를 찾을 수 없습니다."));
 
-        // (1) 텍스트 정보 수정 (DTO에 있는 필드만 수정)
+        // (1) 텍스트 정보 수정
         if (dto.getNickname() != null) user.setNickname(dto.getNickname());
         if (dto.getEmail() != null) user.setEmail(dto.getEmail());
         if (dto.getPhone() != null) user.setPhone(dto.getPhone());
-        // 비밀번호 변경이 필요한 경우 로직 추가 가능
+        if (dto.getName() != null) user.setName(dto.getName());
+        if (dto.getBirthdate() != null) user.setBirthdate(dto.getBirthdate());
+        if (dto.getGender() != null) user.setGender(dto.getGender());
 
         // (2) 파일 업로드 처리
-        // ★ 주의: 실제 파일 저장 로직은 프로젝트 환경(S3, 로컬 등)에 맞춰 구현해야 합니다.
         if (file != null && !file.isEmpty()) {
-            // 예시: String imageUrl = fileService.upload(file);
-            // user.setProfileImage(imageUrl);
-            System.out.println("프로필 이미지 파일이 감지되었습니다: " + file.getOriginalFilename());
+            File saveFolder = new File(uploadDir);
+            if (!saveFolder.exists()) {
+                saveFolder.mkdirs();
+            }
+
+            String uuid = UUID.randomUUID().toString();
+            String fileName = uuid + "_" + file.getOriginalFilename();
+            File saveFile = new File(saveFolder, fileName);
+
+            // ★ 이제 throws IOException이 있어서 여기서 에러가 안 납니다.
+            file.transferTo(saveFile);
+
+            user.setProfileImage("/uploads/" + fileName);
+            System.out.println("이미지 저장 경로: " + saveFile.getAbsolutePath());
         }
 
-        return user; // 변경 감지(Dirty Checking)에 의해 자동 저장됨
+        return user;
     }
     // ▲▲▲ [추가 완료] ▲▲▲
 
