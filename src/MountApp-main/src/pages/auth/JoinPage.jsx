@@ -119,7 +119,7 @@ export default function JoinPage() {
 
             if (response.status === 200) {
                 alert("회원가입 성공! 로그인 페이지로 이동합니다.");
-                navigate('/login');
+                navigate('/home');
             }
         } catch (error) {
             console.error("회원가입 에러:", error);
@@ -131,7 +131,7 @@ export default function JoinPage() {
         <div className="w-full min-h-screen bg-gray-100 flex justify-center">
             {/* 450px 앱 화면 */}
             <div className="w-[450px] min-h-screen bg-gradient-to-br from-blue-100 to-blue-300 flex items-center justify-center p-4">
-                
+
                 <motion.div className="bg-white rounded-2xl shadow-xl p-4 w-[310px]">
                     <h2 className="text-2xl font-bold mb-6 text-center text-blue-600">회원가입</h2>
 
@@ -258,22 +258,9 @@ export default function JoinPage() {
                                     placeholder="전화번호 입력"
                                     className="w-[160px] flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                                 />
-                                <button type="button" className="bg-sky-500 text-white px-3 py-2 rounded-lg">
-                                    인증
-                                </button>
                             </div>
                         </div>
 
-                        {/* 인증번호 */}
-                        <div className="flex flex-col">
-                            <label className="mb-1 font-medium text-gray-700">인증번호</label>
-                            <input
-                                type="text"
-                                name="authCode"
-                                placeholder="인증번호 입력"
-                                className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            />
-                        </div>
 
                         {/* 이메일 */}
                         <div className="flex flex-col">

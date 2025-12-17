@@ -76,7 +76,7 @@ export default function LoginPage() {
 
                 alert("로그인 성공! 환영합니다.");
 
-                navigate("/");
+                navigate("/home");
                 window.location.reload();
             }
         } catch (error) {

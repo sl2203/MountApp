@@ -14,9 +14,9 @@ function MainLayout() {
         {/* 하단바 */}
         <footer className="fixed bottom-0 left-1/2 -translate-x-1/2 w-[450px] h-16 bg-white border-t flex justify-around items-center">
           <Link
-            to="/"
+            to="/home"
             className={`flex flex-col items-center gap-1 ${
-              isActive("/") ? "text-blue-500" : "text-gray-500"
+              isActive("/home") ? "text-blue-500" : "text-gray-500"
             }`}
           >
             <House size={20} />

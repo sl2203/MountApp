@@ -19,12 +19,12 @@ function App() {
         <AdminMode>
             <Routes>
                 <Route path="/join" element={<JoinPage />} />
-                <Route path="/login" element={<LoginPage />} />
+                <Route path="/" element={<LoginPage />} />
                 <Route path="/find" element={<FindAccountPage />} />
                 <Route path="/mypage/detail" element={<Profile />} />
                 <Route path="/mypage/change" element={<ProfileChange />} />
                 <Route element={<MainLayout />}>
-                    <Route path="/" element={<Home />} />
+                    <Route path="/home" element={<Home />} />
                     <Route path="/map" element={<Map />} />
                     <Route path="/mountain/:id" element={<MountainDetail />} />
                     <Route path="/community" element={<Community />} />

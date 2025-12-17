@@ -66,7 +66,7 @@ export default function Community() {
                     if (alertShown.current) return;
                     alertShown.current = true;
                     alert("로그인이 필요한 서비스입니다.");
-                    navigate("/login");
+                    navigate("/");
                 }
             });
     }, [navigate]);

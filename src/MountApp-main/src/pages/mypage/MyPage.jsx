@@ -103,7 +103,7 @@ export default function MyPage() {
 
             if (!token) {
                 alert("로그인이 필요합니다.");
-                navigate("/login");
+                navigate("/");
                 return;
             }
 
@@ -157,7 +157,7 @@ export default function MyPage() {
                 // 토큰 만료 시 로그인 페이지로
                 if (error.response?.status === 401) {
                     localStorage.removeItem("jwtToken");
-                    navigate("/login");
+                    navigate("/");
                 }
                 setLoading(false);
             }
@@ -178,7 +178,7 @@ export default function MyPage() {
     const handleLogout = () => {
         localStorage.removeItem("jwtToken");
         setShowLogoutModal(false);
-        navigate("/login");
+        navigate("/");
     };
 
     const handleDeleteAccount = async () => {
@@ -193,7 +193,7 @@ export default function MyPage() {
                 localStorage.clear();
                 setShowDeleteModal(false);
                 alert("탈퇴가 완료되었습니다.");
-                navigate("/login");
+                navigate("/");
             }
         } catch (error) {
             alert("탈퇴 처리 중 오류가 발생했습니다.");
