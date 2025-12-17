@@ -1,6 +1,7 @@
 package com.example.mountapp.repository;
 
 import com.example.mountapp.domain.Comments;
+import com.example.mountapp.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,4 +16,5 @@ public interface CommentRepository extends JpaRepository<Comments, Long> {
     @Query("SELECT c FROM Comments c JOIN FETCH c.user WHERE c.postId = :postId ORDER BY c.commentId DESC")
     List<Comments> findByPostIdWithUser(@Param("postId") Long postId);
     int countByPostId(Long postId);
+    void deleteAllByUser(User user);
 }

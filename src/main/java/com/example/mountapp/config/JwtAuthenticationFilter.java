@@ -26,40 +26,41 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // 1. 헤더에서 Authorization 키 값 가져오기
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String username;
 
-        // 2. 토큰이 없거나 "Bearer "로 시작하지 않으면 통과 (비로그인 요청)
+        // 1. 토큰 없으면 그냥 통과
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 3. "Bearer " 이후의 토큰 값만 추출
-        jwt = authHeader.substring(7);
-        username = jwtUtil.extractUsername(jwt); // 토큰에서 아이디 꺼내기
+        // 2. [수정] 토큰 검증 로직 전체를 Try-Catch로 감싸기
+        try {
+            jwt = authHeader.substring(7);
+            username = jwtUtil.extractUsername(jwt);
 
-        // 4. 아이디가 있고, 현재 인증되지 않은 상태라면 인증 처리 시도
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userService.loadUserByUsername(username);
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = this.userService.loadUserByUsername(username);
 
-            // 5. 토큰이 유효하다면 인증 객체(Authentication) 생성 후 저장
-            if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                );
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                // [핵심] Spring Security에게 "이 사람 로그인 됐어!"라고 알려줌
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities()
+                    );
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
+        } catch (Exception e) {
+            // [중요] 토큰 오류가 나도 로그만 찍고, 요청은 계속 진행시켜야 함!
+            // 그래야 permitAll 페이지(admin 등)에 접근 가능해짐.
+            System.out.println("JWT 인증 실패 (무시됨): " + e.getMessage());
         }
 
-        // 6. 다음 필터로 넘기기
         filterChain.doFilter(request, response);
     }
+
+        // 6. 다음 필터로 넘기기
+
 }
