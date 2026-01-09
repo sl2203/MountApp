@@ -1,7 +1,7 @@
     import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Sunrise, Sunset } from "lucide-react";
-const API_KEY = "a0ffee904751e8e4191ca6b7ea75f109"; 
+const API_KEY = "7435802c8b57480c8b263a61cbecb98c";
 
 const formatDailyDate = (timestamp) => {
   return new Date(timestamp * 1000).toLocaleDateString("ko-KR", {
