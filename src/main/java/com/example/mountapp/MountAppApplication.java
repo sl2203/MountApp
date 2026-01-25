@@ -9,5 +9,4 @@ public class MountAppApplication {
     public static void main(String[] args) {
         SpringApplication.run(MountAppApplication.class, args);
     }
-
 }
