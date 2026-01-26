@@ -1,10 +1,10 @@
 export const posts = [
     {
-      id: 1,
-      title: "북한산 등산 후기",
-      comment: "정상에서 본 서울 야경이 정말 멋졌어요!",
-      image: "https://search.pstatic.net/sunny/?src=https%3A%2F%2Fcdn.ppomppu.co.kr%2Fzboard%2Fdata3%2F2022%2F0423%2F20220423235944_Rl0AyedsfQ.jpg&type=sc960_832",
-      date: "2025-02-01",
+        id: 1,
+        title: "북한산 등산 후기",
+        comment: "정상에서 본 서울 야경이 정말 멋졌어요!",
+        image: "https://search.pstatic.net/sunny/?src=https%3A%2F%2Fcdn.ppomppu.co.kr%2Fzboard%2Fdata3%2F2022%2F0423%2F20220423235944_Rl0AyedsfQ.jpg&type=sc960_832",
+        date: "2025-02-01",
     },
     {
       id: 2,

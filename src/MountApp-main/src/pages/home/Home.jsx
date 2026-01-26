@@ -1,8 +1,10 @@
     import { useState, useEffect } from "react";
+    import { useNavigate } from "react-router-dom";
     import { motion } from "framer-motion";
     import { Siren, Mountain } from "lucide-react"; // 아이콘 유지
     import { Link } from "react-router-dom";
     import axios from "axios";
+
 
     import logo from "/src/assets/logo.png";
     import SearchBar from "/src/layouts/SearchBar.jsx";
@@ -15,7 +17,6 @@
         const [searchTerm, setSearchTerm] = useState("");
         const [disasterAlerts, setDisasterAlerts] = useState([]);
         const [loading, setLoading] = useState(true);
-
         // ========================================================
         // 1. [복구] 잘 작동하던 기존 API 키 및 XML 파싱 함수
         // ========================================================
@@ -122,7 +123,7 @@
                 >
                     {/* 헤더 (새로운 UI 유지) */}
                     <motion.header variants={fadeIn} className="flex items-center gap-2 py-3">
-                        <img src={logo} alt="MountApp 로고" className="w-8 h-8 object-contain" />
+                        <img src={logo} alt="MountApp 로고" className="w-12 h-12  rounded-full object-fill" />
                         <h1 className="text-3xl font-extrabold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent drop-shadow-sm">
                             MountApp
                         </h1>
@@ -208,6 +209,7 @@
                             <li>모든 산행은 본인의 책임하에 이루어집니다.</li>
                         </ul>
                     </motion.footer>
+
                 </motion.section>
             </div>
         );
