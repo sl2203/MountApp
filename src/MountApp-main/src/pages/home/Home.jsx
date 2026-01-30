@@ -170,7 +170,7 @@
                                                 src={mt.imageUrl?.split(",")[0] || "https://via.placeholder.com/200"}
                                                 alt={mt.name}
                                                 className="w-full h-32 object-cover"
-                                                onError={(e) => e.target.src = "https://via.placeholder.com/300?text=No+Image"}
+                                                onError={(e) => e.target.src = null}
                                             />
                                             <div className="p-3 flex flex-col space-y-1">
                                                 <div className="flex items-center space-x-1">

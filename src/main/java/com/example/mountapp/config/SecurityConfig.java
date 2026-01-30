@@ -45,6 +45,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").permitAll()
                         .requestMatchers("/images/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("api/gemini/chat").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/auth/me").authenticated() // 수정 요청은 로그인 필수
                         .requestMatchers(HttpMethod.GET, "/api/auth/me").authenticated() // 조회 요청도 로그인 필수
                         .requestMatchers("/api/auth/withdraw").authenticated()
